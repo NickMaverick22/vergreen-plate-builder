@@ -5,7 +5,6 @@ import InteractiveButton from "@/components/ui/interactive-button";
 
 const Index = () => {
   useEffect(() => {
-    // Scroll to top on page load
     window.scrollTo(0, 0);
   }, []);
 
@@ -20,38 +19,38 @@ const Index = () => {
           <div className="absolute -top-2 -right-2 w-6 h-6 bg-vergreen-400 rounded-full animate-pulse"></div>
         </div>
 
-        {/* Brand Name */}
+        {/* Brand Name - Updated to match brand identity */}
         <div className="space-y-2 slide-up" style={{ animationDelay: '0.1s' }}>
-          <h1 className="text-4xl font-bold text-vergreen-800 tracking-tight">
-            ver<span className="text-vergreen-600">green</span>
+          <h1 className="text-4xl font-bold text-vergreen-800 tracking-tight lowercase">
+            vergreen
           </h1>
-          <p className="text-vergreen-600 font-medium tracking-wider text-sm uppercase">
-            Fresh Healthy Food
+          <p className="text-vergreen-600 font-medium tracking-[0.3em] text-xs uppercase">
+            FRESH HEALTHY FOOD
           </p>
         </div>
 
         {/* Feature Icons */}
         <div className="flex justify-center space-x-6 py-4 slide-up" style={{ animationDelay: '0.2s' }}>
-          <div className="w-12 h-12 bg-white rounded-2xl neumorphic flex items-center justify-center">
+          <div className="w-12 h-12 bg-white rounded-2xl neumorphic flex items-center justify-center hover:scale-110 transition-transform duration-300">
             <Utensils className="w-6 h-6 text-vergreen-500" />
           </div>
-          <div className="w-12 h-12 bg-white rounded-2xl neumorphic flex items-center justify-center">
+          <div className="w-12 h-12 bg-white rounded-2xl neumorphic flex items-center justify-center hover:scale-110 transition-transform duration-300">
             <Heart className="w-6 h-6 text-vergreen-500" />
           </div>
-          <div className="w-12 h-12 bg-white rounded-2xl neumorphic flex items-center justify-center">
+          <div className="w-12 h-12 bg-white rounded-2xl neumorphic flex items-center justify-center hover:scale-110 transition-transform duration-300">
             <Leaf className="w-6 h-6 text-vergreen-500" />
           </div>
         </div>
 
         {/* CTA */}
         <div className="space-y-4 slide-up" style={{ animationDelay: '0.3s' }}>
-          <p className="text-vergreen-700 text-lg">
+          <p className="text-vergreen-700 text-lg font-medium">
             Welcome to your healthy food journey
           </p>
           <InteractiveButton 
             to="/auth"
             size="large"
-            className="w-full"
+            className="w-full shadow-lg hover:shadow-xl"
           >
             Get Started
           </InteractiveButton>

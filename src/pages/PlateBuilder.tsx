@@ -13,57 +13,100 @@ const PlateBuilder = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [selections, setSelections] = useState({
+    barType: null,
     base: null,
     proteins: [],
-    vegetables: [],
-    extras: [],
+    fibers: [],
+    cheese: [],
     sauces: [],
     notes: ""
   });
 
   const steps = [
-    { number: 1, title: "Choose Base", description: "Select your foundation" },
-    { number: 2, title: "Add Ingredients", description: "Build your perfect meal" },
-    { number: 3, title: "Review & Order", description: "Confirm your selection" }
+    { number: 1, title: "Choose Bar Type", description: "Select your meal style" },
+    { number: 2, title: "Choose Base", description: "Select your foundation" },
+    { number: 3, title: "Add Ingredients", description: "Build your perfect meal" },
+    { number: 4, title: "Review & Order", description: "Confirm your selection" }
   ];
 
-  const bases = [
-    { id: 'quinoa', name: 'Quinoa', price: 3.50, icon: '🌾' },
-    { id: 'rice', name: 'Brown Rice', price: 3.00, icon: '🍚' },
-    { id: 'pasta', name: 'Whole Wheat Pasta', price: 3.50, icon: '🍝' },
-    { id: 'salad', name: 'Mixed Greens', price: 4.00, icon: '🥗' }
+  const barTypes = [
+    { id: 'salad', name: '🥗 Salad Bar', description: 'Fresh and healthy greens' },
+    { id: 'pasta', name: '🍝 Pasta Bar', description: 'Warm and satisfying pasta' }
   ];
 
-  const ingredients = {
-    proteins: [
-      { id: 'chicken', name: 'Grilled Chicken', price: 4.50, icon: '🍗' },
-      { id: 'salmon', name: 'Grilled Salmon', price: 6.00, icon: '🐟' },
-      { id: 'tofu', name: 'Marinated Tofu', price: 3.50, icon: '🧈' },
-      { id: 'beans', name: 'Black Beans', price: 2.50, icon: '🫘' }
-    ],
-    vegetables: [
-      { id: 'broccoli', name: 'Steamed Broccoli', price: 1.50, icon: '🥦' },
-      { id: 'carrots', name: 'Roasted Carrots', price: 1.50, icon: '🥕' },
-      { id: 'peppers', name: 'Bell Peppers', price: 1.50, icon: '🫑' },
-      { id: 'tomatoes', name: 'Cherry Tomatoes', price: 2.00, icon: '🍅' }
-    ],
-    extras: [
-      { id: 'avocado', name: 'Fresh Avocado', price: 2.50, icon: '🥑' },
-      { id: 'feta', name: 'Feta Cheese', price: 2.00, icon: '🧀' },
-      { id: 'nuts', name: 'Mixed Nuts', price: 1.50, icon: '🥜' },
-      { id: 'seeds', name: 'Pumpkin Seeds', price: 1.00, icon: '🌱' }
-    ],
-    sauces: [
-      { id: 'tahini', name: 'Tahini Dressing', price: 0.50, icon: '🥄' },
-      { id: 'olive', name: 'Olive Oil & Lemon', price: 0.50, icon: '🫒' },
-      { id: 'balsamic', name: 'Balsamic Glaze', price: 0.50, icon: '🍯' },
-      { id: 'pesto', name: 'Basil Pesto', price: 0.75, icon: '🌿' }
-    ]
+  const getBasesForBarType = () => {
+    if (selections.barType === 'salad') {
+      return [
+        { id: 'rice', name: 'Rice', price: 3.00, icon: '🍚' },
+        { id: 'lentils', name: 'Lentils', price: 3.50, icon: '🌾' },
+        { id: 'lettuce', name: 'Lettuce', price: 2.50, icon: '🥬' },
+        { id: 'quinoa', name: 'Quinoa', price: 4.00, icon: '🌾' },
+        { id: 'pasta-cold', name: 'Cold Pasta', price: 3.50, icon: '🍝' }
+      ];
+    } else if (selections.barType === 'pasta') {
+      return [
+        { id: 'penne', name: 'Penne', price: 3.50, icon: '🍝' },
+        { id: 'fusilli', name: 'Fusilli', price: 3.50, icon: '🍝' },
+        { id: 'spaghetti', name: 'Spaghetti', price: 3.50, icon: '🍝' },
+        { id: 'farfalle', name: 'Farfalle', price: 3.50, icon: '🍝' }
+      ];
+    }
+    return [];
   };
 
+  const getSaucesForBarType = () => {
+    if (selections.barType === 'salad') {
+      return [
+        { id: 'pesto', name: 'Pesto', price: 0.75, icon: '🌿' },
+        { id: 'classic', name: 'Classic', price: 0.50, icon: '🥄' },
+        { id: 'caesar', name: 'Caesar', price: 0.75, icon: '🥄' },
+        { id: 'green', name: 'Green', price: 0.50, icon: '🥄' },
+        { id: 'miel-moutarde', name: 'Miel Moutarde', price: 0.75, icon: '🍯' },
+        { id: 'moutarde', name: 'Moutarde', price: 0.50, icon: '🥄' },
+        { id: 'basilic', name: 'Basilic', price: 0.75, icon: '🌿' }
+      ];
+    } else if (selections.barType === 'pasta') {
+      return [
+        { id: 'tomato', name: 'Tomato Sauce', price: 0.75, icon: '🍅' },
+        { id: 'hot-tomato', name: 'Hot Tomato', price: 1.00, icon: '🌶️' },
+        { id: 'white-sauce', name: 'White Sauce', price: 1.00, icon: '🥛' },
+        { id: 'pesto-pasta', name: 'Pesto', price: 1.25, icon: '🌿' }
+      ];
+    }
+    return [];
+  };
+
+  const proteins = [
+    { id: 'chicken', name: 'Chicken', price: 4.50, icon: '🍗' },
+    { id: 'tuna', name: 'Tuna', price: 5.00, icon: '🐟' },
+    { id: 'boiled-egg', name: 'Boiled Egg', price: 2.00, icon: '🥚' },
+    { id: 'jambon', name: 'Jambon', price: 4.00, icon: '🥓' },
+    { id: 'meatballs', name: 'Meatballs', price: 4.50, icon: '🍖' },
+    { id: 'shrimp', name: 'Shrimp', price: 6.00, icon: '🦐' }
+  ];
+
+  const fibers = [
+    { id: 'chickpeas', name: 'Chickpeas', price: 1.50, icon: '🫘' },
+    { id: 'kidney-beans', name: 'Kidney Beans', price: 1.50, icon: '🫘' },
+    { id: 'carrots', name: 'Carrots', price: 1.00, icon: '🥕' },
+    { id: 'corn', name: 'Corn', price: 1.50, icon: '🌽' },
+    { id: 'onion', name: 'Onion', price: 0.75, icon: '🧅' },
+    { id: 'spinach', name: 'Spinach', price: 1.50, icon: '🥬' },
+    { id: 'cucumber', name: 'Cucumber', price: 1.00, icon: '🥒' },
+    { id: 'tomato', name: 'Tomato', price: 1.50, icon: '🍅' },
+    { id: 'mushrooms', name: 'Mushrooms', price: 2.00, icon: '🍄' },
+    { id: 'green-peas', name: 'Green Peas', price: 1.50, icon: '🟢' },
+    { id: 'courgette', name: 'Courgette', price: 1.50, icon: '🥒' }
+  ];
+
+  const cheese = [
+    { id: 'mozzarella', name: 'Mozzarella', price: 2.50, icon: '🧀' },
+    { id: 'sicilian', name: 'Sicilian Cheese', price: 3.00, icon: '🧀' }
+  ];
+
   const handleItemToggle = (category, item) => {
-    if (category === 'base') {
-      setSelections(prev => ({ ...prev, base: item }));
+    if (category === 'base' || category === 'barType') {
+      setSelections(prev => ({ ...prev, [category]: item }));
     } else {
       setSelections(prev => ({
         ...prev,
@@ -77,22 +120,32 @@ const PlateBuilder = () => {
   const calculateTotal = () => {
     let total = 0;
     if (selections.base) total += selections.base.price;
-    ['proteins', 'vegetables', 'extras', 'sauces'].forEach(category => {
+    ['proteins', 'fibers', 'cheese', 'sauces'].forEach(category => {
       total += selections[category].reduce((sum, item) => sum + item.price, 0);
     });
     return total.toFixed(2);
   };
 
   const handleNext = () => {
-    if (currentStep < 3) {
+    if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-      // Place order
       toast({
         title: "Order placed successfully! 🎉",
-        description: `Your plate is being prepared. Total: $${calculateTotal()}`,
+        description: `Your ${selections.barType} plate is being prepared. Total: $${calculateTotal()}`,
       });
       navigate('/tracking');
+    }
+  };
+
+  const canProceed = () => {
+    switch (currentStep) {
+      case 1: return selections.barType !== null;
+      case 2: return selections.base !== null;
+      case 3: return true; // Can always proceed from ingredients
+      case 4: return true; // Can always place order
+      default: return false;
     }
   };
 
@@ -101,28 +154,25 @@ const PlateBuilder = () => {
       case 1:
         return (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-vergreen-800 mb-4">
-              Choose Your Base
+            <h3 className="text-lg font-semibold text-vergreen-800 mb-4 text-center">
+              Choose Your Bar Type
             </h3>
-            <div className="grid grid-cols-2 gap-3">
-              {bases.map(base => (
+            <div className="space-y-3">
+              {barTypes.map(barType => (
                 <Card
-                  key={base.id}
-                  className={`p-4 border-2 cursor-pointer transition-all duration-300 rounded-2xl ${
-                    selections.base?.id === base.id
-                      ? 'border-vergreen-500 bg-vergreen-50'
-                      : 'border-vergreen-200 bg-white hover:border-vergreen-300'
+                  key={barType.id}
+                  className={`p-6 border-2 cursor-pointer transition-all duration-300 rounded-2xl transform hover:scale-105 ${
+                    selections.barType?.id === barType.id
+                      ? 'border-vergreen-500 bg-vergreen-50 scale-105'
+                      : 'border-vergreen-200 bg-white hover:border-vergreen-300 hover:bg-vergreen-25'
                   }`}
-                  onClick={() => handleItemToggle('base', base)}
+                  onClick={() => handleItemToggle('barType', barType)}
                 >
                   <div className="text-center space-y-2">
-                    <div className="text-3xl">{base.icon}</div>
-                    <h4 className="font-medium text-vergreen-800">{base.name}</h4>
-                    <p className="text-sm font-semibold text-vergreen-600">
-                      ${base.price}
-                    </p>
-                    {selections.base?.id === base.id && (
-                      <div className="w-6 h-6 bg-vergreen-500 rounded-full mx-auto flex items-center justify-center">
+                    <h4 className="text-xl font-medium text-vergreen-800">{barType.name}</h4>
+                    <p className="text-sm text-vergreen-600">{barType.description}</p>
+                    {selections.barType?.id === barType.id && (
+                      <div className="w-6 h-6 bg-vergreen-500 rounded-full mx-auto flex items-center justify-center animate-scale-in">
                         <Check className="w-4 h-4 text-white" />
                       </div>
                     )}
@@ -135,59 +185,215 @@ const PlateBuilder = () => {
 
       case 2:
         return (
-          <div className="space-y-6">
-            {Object.entries(ingredients).map(([category, items]) => (
-              <div key={category} className="space-y-3">
-                <h3 className="text-lg font-semibold text-vergreen-800 capitalize">
-                  {category}
-                </h3>
-                <div className="grid grid-cols-1 gap-2">
-                  {items.map(item => {
-                    const isSelected = selections[category].find(i => i.id === item.id);
-                    return (
-                      <Card
-                        key={item.id}
-                        className={`p-3 border cursor-pointer transition-all duration-300 rounded-2xl ${
-                          isSelected
-                            ? 'border-vergreen-500 bg-vergreen-50'
-                            : 'border-vergreen-200 bg-white hover:border-vergreen-300'
-                        }`}
-                        onClick={() => handleItemToggle(category, item)}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-3">
-                            <span className="text-2xl">{item.icon}</span>
-                            <div>
-                              <h4 className="font-medium text-vergreen-800">{item.name}</h4>
-                              <p className="text-sm text-vergreen-600">${item.price}</p>
-                            </div>
-                          </div>
-                          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                            isSelected
-                              ? 'bg-vergreen-500 border-vergreen-500'
-                              : 'border-vergreen-300'
-                          }`}>
-                            {isSelected && <Check className="w-4 h-4 text-white" />}
-                          </div>
-                        </div>
-                      </Card>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-vergreen-800 mb-4 text-center">
+              Choose Your Base
+            </h3>
+            <div className="grid grid-cols-2 gap-3">
+              {getBasesForBarType().map(base => (
+                <Card
+                  key={base.id}
+                  className={`p-4 border-2 cursor-pointer transition-all duration-300 rounded-2xl transform hover:scale-105 ${
+                    selections.base?.id === base.id
+                      ? 'border-vergreen-500 bg-vergreen-50 scale-105'
+                      : 'border-vergreen-200 bg-white hover:border-vergreen-300'
+                  }`}
+                  onClick={() => handleItemToggle('base', base)}
+                >
+                  <div className="text-center space-y-2">
+                    <div className="text-3xl">{base.icon}</div>
+                    <h4 className="font-medium text-vergreen-800">{base.name}</h4>
+                    <p className="text-sm font-semibold text-vergreen-600">
+                      ${base.price}
+                    </p>
+                    {selections.base?.id === base.id && (
+                      <div className="w-6 h-6 bg-vergreen-500 rounded-full mx-auto flex items-center justify-center animate-scale-in">
+                        <Check className="w-4 h-4 text-white" />
+                      </div>
+                    )}
+                  </div>
+                </Card>
+              ))}
+            </div>
           </div>
         );
 
       case 3:
         return (
           <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-vergreen-800">
+            <h3 className="text-lg font-semibold text-vergreen-800 text-center mb-6">
+              Add Your Ingredients
+            </h3>
+            
+            {/* Proteins */}
+            <div className="space-y-3">
+              <h4 className="text-md font-semibold text-vergreen-800">Proteins</h4>
+              <div className="grid grid-cols-1 gap-2">
+                {proteins.map(item => {
+                  const isSelected = selections.proteins.find(i => i.id === item.id);
+                  return (
+                    <Card
+                      key={item.id}
+                      className={`p-3 border cursor-pointer transition-all duration-300 rounded-2xl transform hover:scale-105 ${
+                        isSelected
+                          ? 'border-vergreen-500 bg-vergreen-50 scale-105'
+                          : 'border-vergreen-200 bg-white hover:border-vergreen-300'
+                      }`}
+                      onClick={() => handleItemToggle('proteins', item)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <span className="text-2xl">{item.icon}</span>
+                          <div>
+                            <h5 className="font-medium text-vergreen-800">{item.name}</h5>
+                            <p className="text-sm text-vergreen-600">${item.price}</p>
+                          </div>
+                        </div>
+                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
+                          isSelected
+                            ? 'bg-vergreen-500 border-vergreen-500 scale-110'
+                            : 'border-vergreen-300'
+                        }`}>
+                          {isSelected && <Check className="w-4 h-4 text-white" />}
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Fibers & Vegetables */}
+            <div className="space-y-3">
+              <h4 className="text-md font-semibold text-vergreen-800">Fibers & Vegetables</h4>
+              <div className="grid grid-cols-1 gap-2">
+                {fibers.map(item => {
+                  const isSelected = selections.fibers.find(i => i.id === item.id);
+                  return (
+                    <Card
+                      key={item.id}
+                      className={`p-3 border cursor-pointer transition-all duration-300 rounded-2xl transform hover:scale-105 ${
+                        isSelected
+                          ? 'border-vergreen-500 bg-vergreen-50 scale-105'
+                          : 'border-vergreen-200 bg-white hover:border-vergreen-300'
+                      }`}
+                      onClick={() => handleItemToggle('fibers', item)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <span className="text-2xl">{item.icon}</span>
+                          <div>
+                            <h5 className="font-medium text-vergreen-800">{item.name}</h5>
+                            <p className="text-sm text-vergreen-600">${item.price}</p>
+                          </div>
+                        </div>
+                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
+                          isSelected
+                            ? 'bg-vergreen-500 border-vergreen-500 scale-110'
+                            : 'border-vergreen-300'
+                        }`}>
+                          {isSelected && <Check className="w-4 h-4 text-white" />}
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Cheese */}
+            <div className="space-y-3">
+              <h4 className="text-md font-semibold text-vergreen-800">Cheese</h4>
+              <div className="grid grid-cols-1 gap-2">
+                {cheese.map(item => {
+                  const isSelected = selections.cheese.find(i => i.id === item.id);
+                  return (
+                    <Card
+                      key={item.id}
+                      className={`p-3 border cursor-pointer transition-all duration-300 rounded-2xl transform hover:scale-105 ${
+                        isSelected
+                          ? 'border-vergreen-500 bg-vergreen-50 scale-105'
+                          : 'border-vergreen-200 bg-white hover:border-vergreen-300'
+                      }`}
+                      onClick={() => handleItemToggle('cheese', item)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <span className="text-2xl">{item.icon}</span>
+                          <div>
+                            <h5 className="font-medium text-vergreen-800">{item.name}</h5>
+                            <p className="text-sm text-vergreen-600">${item.price}</p>
+                          </div>
+                        </div>
+                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
+                          isSelected
+                            ? 'bg-vergreen-500 border-vergreen-500 scale-110'
+                            : 'border-vergreen-300'
+                        }`}>
+                          {isSelected && <Check className="w-4 h-4 text-white" />}
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Sauces */}
+            <div className="space-y-3">
+              <h4 className="text-md font-semibold text-vergreen-800">Sauces</h4>
+              <div className="grid grid-cols-1 gap-2">
+                {getSaucesForBarType().map(item => {
+                  const isSelected = selections.sauces.find(i => i.id === item.id);
+                  return (
+                    <Card
+                      key={item.id}
+                      className={`p-3 border cursor-pointer transition-all duration-300 rounded-2xl transform hover:scale-105 ${
+                        isSelected
+                          ? 'border-vergreen-500 bg-vergreen-50 scale-105'
+                          : 'border-vergreen-200 bg-white hover:border-vergreen-300'
+                      }`}
+                      onClick={() => handleItemToggle('sauces', item)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <span className="text-2xl">{item.icon}</span>
+                          <div>
+                            <h5 className="font-medium text-vergreen-800">{item.name}</h5>
+                            <p className="text-sm text-vergreen-600">${item.price}</p>
+                          </div>
+                        </div>
+                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
+                          isSelected
+                            ? 'bg-vergreen-500 border-vergreen-500 scale-110'
+                            : 'border-vergreen-300'
+                        }`}>
+                          {isSelected && <Check className="w-4 h-4 text-white" />}
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        );
+
+      case 4:
+        return (
+          <div className="space-y-6">
+            <h3 className="text-lg font-semibold text-vergreen-800 text-center">
               Review Your Order
             </h3>
             
             {/* Order Summary */}
             <div className="bg-vergreen-50 rounded-2xl p-4 space-y-3">
+              <div className="flex justify-between items-center border-b border-vergreen-200 pb-2">
+                <span className="font-medium text-vergreen-800">
+                  {selections.barType === 'salad' ? '🥗 Salad Bar' : '🍝 Pasta Bar'}
+                </span>
+              </div>
+              
               {selections.base && (
                 <div className="flex justify-between items-center">
                   <span className="text-vergreen-800">Base: {selections.base.name}</span>
@@ -196,7 +402,7 @@ const PlateBuilder = () => {
               )}
               
               {Object.entries(selections).map(([category, items]) => {
-                if (category === 'base' || category === 'notes' || !items.length) return null;
+                if (category === 'base' || category === 'barType' || category === 'notes' || !items.length) return null;
                 return items.map(item => (
                   <div key={item.id} className="flex justify-between items-center">
                     <span className="text-vergreen-800">{item.name}</span>
@@ -238,7 +444,7 @@ const PlateBuilder = () => {
             variant="ghost"
             size="sm"
             onClick={() => currentStep > 1 ? setCurrentStep(currentStep - 1) : navigate('/dashboard')}
-            className="text-vergreen-600 hover:text-vergreen-700"
+            className="text-vergreen-600 hover:text-vergreen-700 hover:bg-vergreen-50 transition-all duration-300"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
@@ -250,18 +456,18 @@ const PlateBuilder = () => {
 
       <div className="max-w-md mx-auto p-4">
         {/* Progress Steps */}
-        <div className="flex items-center justify-between mb-8 px-4">
+        <div className="flex items-center justify-between mb-8 px-2">
           {steps.map((step, index) => (
             <div key={step.number} className="flex items-center">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all duration-300 ${
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all duration-500 transform ${
                 currentStep >= step.number
-                  ? 'bg-vergreen-500 text-white'
+                  ? 'bg-vergreen-500 text-white scale-110'
                   : 'bg-vergreen-200 text-vergreen-600'
               }`}>
                 {currentStep > step.number ? <Check className="w-5 h-5" /> : step.number}
               </div>
               {index < steps.length - 1 && (
-                <div className={`w-16 h-1 mx-2 transition-all duration-300 ${
+                <div className={`w-12 h-1 mx-2 transition-all duration-500 ${
                   currentStep > step.number ? 'bg-vergreen-500' : 'bg-vergreen-200'
                 }`} />
               )}
@@ -295,10 +501,10 @@ const PlateBuilder = () => {
           
           <Button
             onClick={handleNext}
-            disabled={currentStep === 1 && !selections.base}
-            className="w-full bg-vergreen-600 hover:bg-vergreen-700 text-white font-medium py-3 rounded-2xl transition-all duration-300 transform hover:scale-105 disabled:transform-none disabled:opacity-50"
+            disabled={!canProceed()}
+            className="w-full bg-vergreen-600 hover:bg-vergreen-700 text-white font-medium py-3 rounded-2xl transition-all duration-300 transform hover:scale-105 disabled:transform-none disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {currentStep === 3 ? `Place Order - $${calculateTotal()}` : 'Continue'}
+            {currentStep === 4 ? `Place Order - $${calculateTotal()}` : 'Continue'}
           </Button>
         </div>
       </div>

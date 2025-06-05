@@ -10,6 +10,7 @@ import CustomerDashboard from "./pages/CustomerDashboard";
 import PlateBuilder from "./pages/PlateBuilder";
 import OrderTracking from "./pages/OrderTracking";
 import OrderHistory from "./pages/OrderHistory";
+import Profile from "./pages/Profile";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import OrderManagement from "./pages/admin/OrderManagement";
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/plate-builder" element={<PlateBuilder />} />
           <Route path="/tracking" element={<OrderTracking />} />
           <Route path="/history" element={<OrderHistory />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/orders" element={<OrderManagement />} />

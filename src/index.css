@@ -43,6 +43,17 @@
     --sidebar-accent-foreground: 142 76% 20%;
     --sidebar-border: 142 30% 88%;
     --sidebar-ring: 142 76% 36%;
+
+    /* VerGreen brand colors */
+    --vergreen-50: 146 76% 97%;
+    --vergreen-100: 146 76% 92%;
+    --vergreen-200: 146 76% 84%;
+    --vergreen-300: 146 76% 72%;
+    --vergreen-400: 146 76% 58%;
+    --vergreen-500: 146 76% 44%;
+    --vergreen-600: 146 76% 36%;
+    --vergreen-700: 146 76% 28%;
+    --vergreen-800: 146 76% 20%;
   }
 
   .dark {
@@ -120,7 +131,7 @@
   }
 
   .interactive-card:hover {
-    @apply bg-vergreen-50;
+    @apply bg-vergreen-50 scale-105;
   }
 
   .interactive-card:active {
@@ -150,6 +161,14 @@
   }
 
   .bounce-subtle {
+    animation: bounceSubtle 2s ease-in-out infinite;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out;
+  }
+
+  .animate-bounce-subtle {
     animation: bounceSubtle 2s ease-in-out infinite;
   }
 }
@@ -184,3 +203,52 @@
     transform: translateY(-5px);
   }
 }
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Custom brand colors */
+.text-vergreen-50 { color: hsl(var(--vergreen-50)); }
+.text-vergreen-100 { color: hsl(var(--vergreen-100)); }
+.text-vergreen-200 { color: hsl(var(--vergreen-200)); }
+.text-vergreen-300 { color: hsl(var(--vergreen-300)); }
+.text-vergreen-400 { color: hsl(var(--vergreen-400)); }
+.text-vergreen-500 { color: hsl(var(--vergreen-500)); }
+.text-vergreen-600 { color: hsl(var(--vergreen-600)); }
+.text-vergreen-700 { color: hsl(var(--vergreen-700)); }
+.text-vergreen-800 { color: hsl(var(--vergreen-800)); }
+
+.bg-vergreen-25 { background-color: hsl(146 76% 98%); }
+.bg-vergreen-50 { background-color: hsl(var(--vergreen-50)); }
+.bg-vergreen-100 { background-color: hsl(var(--vergreen-100)); }
+.bg-vergreen-200 { background-color: hsl(var(--vergreen-200)); }
+.bg-vergreen-300 { background-color: hsl(var(--vergreen-300)); }
+.bg-vergreen-400 { background-color: hsl(var(--vergreen-400)); }
+.bg-vergreen-500 { background-color: hsl(var(--vergreen-500)); }
+.bg-vergreen-600 { background-color: hsl(var(--vergreen-600)); }
+.bg-vergreen-700 { background-color: hsl(var(--vergreen-700)); }
+.bg-vergreen-800 { background-color: hsl(var(--vergreen-800)); }
+
+.border-vergreen-100 { border-color: hsl(var(--vergreen-100)); }
+.border-vergreen-200 { border-color: hsl(var(--vergreen-200)); }
+.border-vergreen-300 { border-color: hsl(var(--vergreen-300)); }
+.border-vergreen-400 { border-color: hsl(var(--vergreen-400)); }
+.border-vergreen-500 { border-color: hsl(var(--vergreen-500)); }
+
+.hover\:bg-vergreen-50:hover { background-color: hsl(var(--vergreen-50)); }
+.hover\:bg-vergreen-600:hover { background-color: hsl(var(--vergreen-600)); }
+.hover\:bg-vergreen-700:hover { background-color: hsl(var(--vergreen-700)); }
+.hover\:text-vergreen-700:hover { color: hsl(var(--vergreen-700)); }
+.hover\:text-vergreen-800:hover { color: hsl(var(--vergreen-800)); }
+.hover\:border-vergreen-300:hover { border-color: hsl(var(--vergreen-300)); }
+
+.focus\:ring-vergreen-500:focus { ring-color: hsl(var(--vergreen-500)); }
+.focus\:border-vergreen-500:focus { border-color: hsl(var(--vergreen-500)); }
