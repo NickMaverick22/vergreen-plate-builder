@@ -13,40 +13,29 @@ import {
   LogOut,
   Leaf
 } from "lucide-react";
-import AdminNavbar from "@/components/AdminNavbar";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
 
   const kpis = [
     {
-      title: "Orders Today",
+      title: "Total Orders Today",
       value: "47",
-      change: "+12%",
       icon: Package,
-      color: "text-blue-600"
+      color: "text-blue-600",
+    },
+    {
+      title: "Average Prep Time",
+      value: "14m",
+      icon: TrendingUp,
+      color: "text-purple-600",
     },
     {
       title: "Orders/Hour",
       value: "6.2",
-      change: "+8%",
       icon: Clock,
-      color: "text-vergreen-600"
+      color: "text-vergreen-600",
     },
-    {
-      title: "Queue Size",
-      value: "8",
-      change: "-3",
-      icon: Users,
-      color: "text-orange-600"
-    },
-    {
-      title: "Avg Prep Time",
-      value: "14m",
-      change: "-2m",
-      icon: TrendingUp,
-      color: "text-purple-600"
-    }
   ];
 
   const quickActions = [
@@ -74,9 +63,9 @@ const AdminDashboard = () => {
   ];
 
   const recentOrders = [
-    { id: "VG-001", customer: "Alex Johnson", status: "Preparing", time: "2m ago" },
-    { id: "VG-002", customer: "Sarah Wilson", status: "Ready", time: "5m ago" },
-    { id: "VG-003", customer: "Mike Chen", status: "Validated", time: "7m ago" },
+    { id: "VG-001", time: "10:05", status: "Preparing", total: 12.5 },
+    { id: "VG-002", time: "10:15", status: "Ready", total: 11.25 },
+    { id: "VG-003", time: "10:25", status: "Validated", total: 10.75 },
   ];
 
   return (
@@ -119,7 +108,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* KPIs Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {kpis.map((kpi, index) => (
             <Card key={index} className="bg-white rounded-3xl neumorphic p-6 text-center">
               <div className={`w-12 h-12 ${kpi.color} bg-opacity-10 rounded-2xl mx-auto mb-3 flex items-center justify-center`}>
@@ -130,9 +119,6 @@ const AdminDashboard = () => {
               </div>
               <div className="text-sm text-vergreen-600 mb-1">
                 {kpi.title}
-              </div>
-              <div className="text-xs text-vergreen-500">
-                {kpi.change}
               </div>
             </Card>
           ))}
@@ -166,36 +152,46 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Recent Orders */}
+        {/* Today's Orders */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="bg-white rounded-3xl neumorphic p-6">
+          <Card className="bg-white rounded-3xl neumorphic p-6 overflow-x-auto">
             <h3 className="text-lg font-semibold text-vergreen-800 mb-4">
-              Recent Orders
+              Today's Orders
             </h3>
-            <div className="space-y-3">
-              {recentOrders.map((order, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-vergreen-50 rounded-2xl">
-                  <div>
-                    <div className="font-medium text-vergreen-800">{order.id}</div>
-                    <div className="text-sm text-vergreen-600">{order.customer}</div>
-                  </div>
-                  <div className="text-right">
-                    <div className={`text-sm font-medium px-2 py-1 rounded-lg ${
-                      order.status === 'Ready' 
-                        ? 'bg-green-100 text-green-800'
-                        : order.status === 'Preparing'
-                        ? 'bg-orange-100 text-orange-800'
-                        : 'bg-blue-100 text-blue-800'
-                    }`}>
-                      {order.status}
-                    </div>
-                    <div className="text-xs text-vergreen-500 mt-1">{order.time}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <Button 
-              variant="outline" 
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="border-b border-vergreen-100 text-vergreen-600">
+                  <th className="px-3 py-2 text-left font-medium">Order ID</th>
+                  <th className="px-3 py-2 text-left font-medium">Time</th>
+                  <th className="px-3 py-2 font-medium">Status</th>
+                  <th className="px-3 py-2 text-right font-medium">Total</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-vergreen-100">
+                {recentOrders.map((order) => (
+                  <tr key={order.id}>
+                    <td className="px-3 py-2 whitespace-nowrap">{order.id}</td>
+                    <td className="px-3 py-2 whitespace-nowrap">{order.time}</td>
+                    <td className="px-3 py-2">
+                      <span
+                        className={`px-2 py-1 rounded-lg text-xs font-medium ${
+                          order.status === 'Ready'
+                            ? 'bg-green-100 text-green-800'
+                            : order.status === 'Preparing'
+                            ? 'bg-orange-100 text-orange-800'
+                            : 'bg-blue-100 text-blue-800'
+                        }`}
+                      >
+                        {order.status}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2 text-right">${order.total.toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <Button
+              variant="outline"
               className="w-full mt-4 border-vergreen-200 text-vergreen-700 hover:bg-vergreen-50 rounded-2xl"
               onClick={() => navigate('/admin/orders')}
             >
@@ -239,8 +235,6 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Bottom Navigation */}
-      <AdminNavbar />
     </div>
   );
 };

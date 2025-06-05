@@ -6,34 +6,33 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Package, AlertTriangle, Plus, Minus } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import AdminNavbar from "@/components/AdminNavbar";
 
 const InventoryManagement = () => {
   const navigate = useNavigate();
   const [inventory, setInventory] = useState({
-    bases: [
+    base: [
+      { id: 'rice', name: 'Rice', stock: 20, minStock: 10, icon: '🍚' },
       { id: 'quinoa', name: 'Quinoa', stock: 15, minStock: 10, icon: '🌾' },
-      { id: 'rice', name: 'Brown Rice', stock: 8, minStock: 12, icon: '🍚' },
-      { id: 'pasta', name: 'Whole Wheat Pasta', stock: 20, minStock: 8, icon: '🍝' },
-      { id: 'salad', name: 'Mixed Greens', stock: 25, minStock: 15, icon: '🥗' }
+      { id: 'pasta', name: 'Pasta', stock: 18, minStock: 8, icon: '🍝' }
     ],
     proteins: [
-      { id: 'chicken', name: 'Grilled Chicken', stock: 12, minStock: 10, icon: '🍗' },
-      { id: 'salmon', name: 'Grilled Salmon', stock: 6, minStock: 8, icon: '🐟' },
-      { id: 'tofu', name: 'Marinated Tofu', stock: 18, minStock: 10, icon: '🧈' },
-      { id: 'beans', name: 'Black Beans', stock: 30, minStock: 15, icon: '🫘' }
+      { id: 'chicken', name: 'Chicken', stock: 12, minStock: 10, icon: '🍗' },
+      { id: 'tuna', name: 'Tuna', stock: 9, minStock: 8, icon: '🐟' },
+      { id: 'shrimp', name: 'Shrimp', stock: 6, minStock: 6, icon: '🦐' }
     ],
-    vegetables: [
-      { id: 'broccoli', name: 'Steamed Broccoli', stock: 22, minStock: 15, icon: '🥦' },
-      { id: 'carrots', name: 'Roasted Carrots', stock: 16, minStock: 12, icon: '🥕' },
-      { id: 'peppers', name: 'Bell Peppers', stock: 14, minStock: 10, icon: '🫑' },
-      { id: 'tomatoes', name: 'Cherry Tomatoes', stock: 5, minStock: 12, icon: '🍅' }
+    veggies: [
+      { id: 'spinach', name: 'Spinach', stock: 22, minStock: 15, icon: '🥬' },
+      { id: 'carrots', name: 'Carrots', stock: 16, minStock: 12, icon: '🥕' },
+      { id: 'tomatoes', name: 'Tomatoes', stock: 5, minStock: 10, icon: '🍅' }
     ],
-    extras: [
-      { id: 'avocado', name: 'Fresh Avocado', stock: 3, minStock: 8, icon: '🥑' },
-      { id: 'feta', name: 'Feta Cheese', stock: 5, minStock: 10, icon: '🧀' },
-      { id: 'nuts', name: 'Mixed Nuts', stock: 25, minStock: 15, icon: '🥜' },
-      { id: 'seeds', name: 'Pumpkin Seeds', stock: 18, minStock: 12, icon: '🌱' }
+    cheese: [
+      { id: 'mozz', name: 'Mozzarella', stock: 8, minStock: 6, icon: '🧀' },
+      { id: 'sicilian', name: 'Sicilian', stock: 4, minStock: 6, icon: '🧀' }
+    ],
+    sauces: [
+      { id: 'pesto', name: 'Pesto', stock: 10, minStock: 8, icon: '🫙' },
+      { id: 'tomato', name: 'Tomato', stock: 14, minStock: 10, icon: '🍅' },
+      { id: 'caesar', name: 'Caesar', stock: 6, minStock: 6, icon: '🥣' }
     ]
   });
 
@@ -230,8 +229,6 @@ const InventoryManagement = () => {
         </div>
       </div>
 
-      {/* Bottom Navigation */}
-      <AdminNavbar />
     </div>
   );
 };
