@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Leaf, ChefHat, Clock, History, User, Bell, Plus } from "lucide-react";
+import { Leaf, ChefHat, Clock, History, Bell, Plus } from "lucide-react";
 import CustomerNavbar from "@/components/CustomerNavbar";
 const CustomerDashboard = () => {
   const navigate = useNavigate();
@@ -37,12 +37,13 @@ const CustomerDashboard = () => {
               <p className="text-xs text-vergreen-600">Fresh & Healthy</p>
             </div>
           </div>
-          <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="sm" className="text-vergreen-600 hover:text-vergreen-700">
+          <div className="flex items-center">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-vergreen-600 hover:text-vergreen-700"
+            >
               <Bell className="w-5 h-5" />
-            </Button>
-            <Button variant="ghost" size="sm" className="text-vergreen-600 hover:text-vergreen-700">
-              <User className="w-5 h-5" />
             </Button>
           </div>
         </div>
