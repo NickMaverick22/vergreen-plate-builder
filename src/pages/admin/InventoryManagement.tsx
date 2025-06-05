@@ -1,41 +1,14 @@
 
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Package, AlertTriangle, Plus, Minus } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
-import AdminNavbar from "@/components/AdminNavbar";
+import { useAdminData } from "@/contexts/AdminDataContext";
 
 const InventoryManagement = () => {
   const navigate = useNavigate();
-  const [inventory, setInventory] = useState({
-    bases: [
-      { id: 'quinoa', name: 'Quinoa', stock: 15, minStock: 10, icon: '🌾' },
-      { id: 'rice', name: 'Brown Rice', stock: 8, minStock: 12, icon: '🍚' },
-      { id: 'pasta', name: 'Whole Wheat Pasta', stock: 20, minStock: 8, icon: '🍝' },
-      { id: 'salad', name: 'Mixed Greens', stock: 25, minStock: 15, icon: '🥗' }
-    ],
-    proteins: [
-      { id: 'chicken', name: 'Grilled Chicken', stock: 12, minStock: 10, icon: '🍗' },
-      { id: 'salmon', name: 'Grilled Salmon', stock: 6, minStock: 8, icon: '🐟' },
-      { id: 'tofu', name: 'Marinated Tofu', stock: 18, minStock: 10, icon: '🧈' },
-      { id: 'beans', name: 'Black Beans', stock: 30, minStock: 15, icon: '🫘' }
-    ],
-    vegetables: [
-      { id: 'broccoli', name: 'Steamed Broccoli', stock: 22, minStock: 15, icon: '🥦' },
-      { id: 'carrots', name: 'Roasted Carrots', stock: 16, minStock: 12, icon: '🥕' },
-      { id: 'peppers', name: 'Bell Peppers', stock: 14, minStock: 10, icon: '🫑' },
-      { id: 'tomatoes', name: 'Cherry Tomatoes', stock: 5, minStock: 12, icon: '🍅' }
-    ],
-    extras: [
-      { id: 'avocado', name: 'Fresh Avocado', stock: 3, minStock: 8, icon: '🥑' },
-      { id: 'feta', name: 'Feta Cheese', stock: 5, minStock: 10, icon: '🧀' },
-      { id: 'nuts', name: 'Mixed Nuts', stock: 25, minStock: 15, icon: '🥜' },
-      { id: 'seeds', name: 'Pumpkin Seeds', stock: 18, minStock: 12, icon: '🌱' }
-    ]
-  });
+  const { inventory, adjustInventory, restockItem } = useAdminData();
 
   const getStockStatus = (current, minimum) => {
     if (current === 0) return { status: 'out', color: 'bg-red-500 text-white', label: 'Out of Stock' };
@@ -45,30 +18,7 @@ const InventoryManagement = () => {
   };
 
   const updateStock = (category, itemId, change) => {
-    setInventory(prev => ({
-      ...prev,
-      [category]: prev[category].map(item =>
-        item.id === itemId
-          ? { ...item, stock: Math.max(0, item.stock + change) }
-          : item
-      )
-    }));
-  };
-
-  const restockItem = (category, itemId) => {
-    setInventory(prev => ({
-      ...prev,
-      [category]: prev[category].map(item =>
-        item.id === itemId
-          ? { ...item, stock: item.minStock * 2 }
-          : item
-      )
-    }));
-    
-    toast({
-      title: "Item restocked",
-      description: "Stock levels have been updated",
-    });
+    adjustInventory(category, itemId, change);
   };
 
   const getTotalLowStockItems = () => {
@@ -230,8 +180,6 @@ const InventoryManagement = () => {
         </div>
       </div>
 
-      {/* Bottom Navigation */}
-      <AdminNavbar />
     </div>
   );
 };
