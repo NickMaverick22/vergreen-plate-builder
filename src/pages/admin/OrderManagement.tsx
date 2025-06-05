@@ -7,55 +7,14 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Filter, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useAdminData } from "@/contexts/AdminDataContext";
 
 const OrderManagement = () => {
   const navigate = useNavigate();
+  const { orders, updateOrderStatus } = useAdminData();
   const [statusFilter, setStatusFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-
-  const orders = [
-    {
-      id: "VG-2024-001",
-      customer: "Alex Johnson",
-      status: "Preparing",
-      date: "2025-06-05",
-      time: "12:30",
-      total: 14.5,
-    },
-    {
-      id: "VG-2024-002",
-      customer: "Sarah Wilson",
-      status: "Ready",
-      date: "2025-06-05",
-      time: "12:25",
-      total: 13.25,
-    },
-    {
-      id: "VG-2024-003",
-      customer: "Mike Chen",
-      status: "Validated",
-      date: "2025-06-05",
-      time: "12:35",
-      total: 12.75,
-    },
-    {
-      id: "VG-2024-004",
-      customer: "Emma Davis",
-      status: "Submitted",
-      date: "2025-06-05",
-      time: "12:40",
-      total: 15,
-    },
-    {
-      id: "VG-2024-005",
-      customer: "Tom Brown",
-      status: "Preparing",
-      date: "2025-06-05",
-      time: "12:28",
-      total: 11.5,
-    }
-  ];
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -72,16 +31,13 @@ const OrderManagement = () => {
     }
   };
 
-  const updateOrderStatus = (orderId, newStatus) => {
-    console.log(`Updating order ${orderId} to ${newStatus}`);
-    // Here you would update the order in your state management
-  };
 
   const filteredOrders = orders.filter((order) => {
     if (statusFilter !== "all" && order.status.toLowerCase() !== statusFilter) {
       return false;
     }
-    if (dateFilter && order.date !== dateFilter) {
+    const dateStr = order.createdAt.toISOString().slice(0, 10);
+    if (dateFilter && dateStr !== dateFilter) {
       return false;
     }
     if (
@@ -183,8 +139,12 @@ const OrderManagement = () => {
                 <tr key={order.id}>
                   <td className="px-3 py-2 whitespace-nowrap">{order.id}</td>
                   <td className="px-3 py-2 whitespace-nowrap">{order.customer}</td>
-                  <td className="px-3 py-2 whitespace-nowrap">{order.date}</td>
-                  <td className="px-3 py-2 whitespace-nowrap">{order.time}</td>
+                  <td className="px-3 py-2 whitespace-nowrap">
+                    {order.createdAt.toISOString().slice(0, 10)}
+                  </td>
+                  <td className="px-3 py-2 whitespace-nowrap">
+                    {order.createdAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  </td>
                   <td className="px-3 py-2">
                     <Badge className={`${getStatusColor(order.status)} border-0`}>{order.status}</Badge>
                   </td>

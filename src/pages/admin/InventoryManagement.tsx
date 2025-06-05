@@ -1,40 +1,14 @@
 
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Package, AlertTriangle, Plus, Minus } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { useAdminData } from "@/contexts/AdminDataContext";
 
 const InventoryManagement = () => {
   const navigate = useNavigate();
-  const [inventory, setInventory] = useState({
-    base: [
-      { id: 'rice', name: 'Rice', stock: 20, minStock: 10, icon: '🍚' },
-      { id: 'quinoa', name: 'Quinoa', stock: 15, minStock: 10, icon: '🌾' },
-      { id: 'pasta', name: 'Pasta', stock: 18, minStock: 8, icon: '🍝' }
-    ],
-    proteins: [
-      { id: 'chicken', name: 'Chicken', stock: 12, minStock: 10, icon: '🍗' },
-      { id: 'tuna', name: 'Tuna', stock: 9, minStock: 8, icon: '🐟' },
-      { id: 'shrimp', name: 'Shrimp', stock: 6, minStock: 6, icon: '🦐' }
-    ],
-    veggies: [
-      { id: 'spinach', name: 'Spinach', stock: 22, minStock: 15, icon: '🥬' },
-      { id: 'carrots', name: 'Carrots', stock: 16, minStock: 12, icon: '🥕' },
-      { id: 'tomatoes', name: 'Tomatoes', stock: 5, minStock: 10, icon: '🍅' }
-    ],
-    cheese: [
-      { id: 'mozz', name: 'Mozzarella', stock: 8, minStock: 6, icon: '🧀' },
-      { id: 'sicilian', name: 'Sicilian', stock: 4, minStock: 6, icon: '🧀' }
-    ],
-    sauces: [
-      { id: 'pesto', name: 'Pesto', stock: 10, minStock: 8, icon: '🫙' },
-      { id: 'tomato', name: 'Tomato', stock: 14, minStock: 10, icon: '🍅' },
-      { id: 'caesar', name: 'Caesar', stock: 6, minStock: 6, icon: '🥣' }
-    ]
-  });
+  const { inventory, adjustInventory, restockItem } = useAdminData();
 
   const getStockStatus = (current, minimum) => {
     if (current === 0) return { status: 'out', color: 'bg-red-500 text-white', label: 'Out of Stock' };
@@ -44,30 +18,7 @@ const InventoryManagement = () => {
   };
 
   const updateStock = (category, itemId, change) => {
-    setInventory(prev => ({
-      ...prev,
-      [category]: prev[category].map(item =>
-        item.id === itemId
-          ? { ...item, stock: Math.max(0, item.stock + change) }
-          : item
-      )
-    }));
-  };
-
-  const restockItem = (category, itemId) => {
-    setInventory(prev => ({
-      ...prev,
-      [category]: prev[category].map(item =>
-        item.id === itemId
-          ? { ...item, stock: item.minStock * 2 }
-          : item
-      )
-    }));
-    
-    toast({
-      title: "Item restocked",
-      description: "Stock levels have been updated",
-    });
+    adjustInventory(category, itemId, change);
   };
 
   const getTotalLowStockItems = () => {

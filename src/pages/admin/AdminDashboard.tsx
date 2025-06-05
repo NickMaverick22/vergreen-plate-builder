@@ -2,6 +2,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useAdminData } from "@/contexts/AdminDataContext";
 import { 
   Users, 
   Clock, 
@@ -16,23 +17,28 @@ import {
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const { orders, inventory } = useAdminData();
+
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+  const hoursSinceMorning = (Date.now() - startOfDay.getTime()) / 3600000;
 
   const kpis = [
     {
       title: "Total Orders Today",
-      value: "47",
+      value: orders.length.toString(),
       icon: Package,
       color: "text-blue-600",
     },
     {
       title: "Average Prep Time",
-      value: "14m",
+      value: "8m",
       icon: TrendingUp,
       color: "text-purple-600",
     },
     {
       title: "Orders/Hour",
-      value: "6.2",
+      value: hoursSinceMorning ? (orders.length / hoursSinceMorning).toFixed(1) : "0",
       icon: Clock,
       color: "text-vergreen-600",
     },
@@ -62,11 +68,12 @@ const AdminDashboard = () => {
     }
   ];
 
-  const recentOrders = [
-    { id: "VG-001", time: "10:05", status: "Preparing", total: 12.5 },
-    { id: "VG-002", time: "10:15", status: "Ready", total: 11.25 },
-    { id: "VG-003", time: "10:25", status: "Validated", total: 10.75 },
-  ];
+  const recentOrders = orders.slice(0, 5);
+  const lowStock = Object.entries(inventory)
+    .flatMap(([category, items]) =>
+      items.filter((i) => i.stock <= i.minStock).map((i) => ({ ...i, category }))
+    )
+    .slice(0, 2);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-vergreen-50 to-emerald-50 pb-20 md:pb-4">
@@ -205,24 +212,31 @@ const AdminDashboard = () => {
               Low Stock Alerts
             </h3>
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-red-50 rounded-2xl">
-                <div>
-                  <div className="font-medium text-red-800">🥑 Avocado</div>
-                  <div className="text-sm text-red-600">Only 3 portions left</div>
+              {lowStock.length === 0 && (
+                <p className="text-sm text-vergreen-600">All items well stocked</p>
+              )}
+              {lowStock.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between p-3 bg-red-50 rounded-2xl"
+                >
+                  <div>
+                    <div className="font-medium text-red-800">
+                      {item.icon} {item.name}
+                    </div>
+                    <div className="text-sm text-red-600">
+                      {item.stock} portions left
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    className="bg-red-600 hover:bg-red-700 text-white rounded-xl"
+                    onClick={() => navigate('/admin/inventory')}
+                  >
+                    Restock
+                  </Button>
                 </div>
-                <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white rounded-xl">
-                  Restock
-                </Button>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-2xl">
-                <div>
-                  <div className="font-medium text-yellow-800">🧀 Feta Cheese</div>
-                  <div className="text-sm text-yellow-600">5 portions remaining</div>
-                </div>
-                <Button size="sm" className="bg-yellow-600 hover:bg-yellow-700 text-white rounded-xl">
-                  Restock
-                </Button>
-              </div>
+              ))}
             </div>
             <Button 
               variant="outline" 

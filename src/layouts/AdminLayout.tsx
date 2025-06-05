@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import AdminNavbar from "@/components/AdminNavbar";
+import { AdminProvider } from "@/contexts/AdminDataContext";
 import {
   Home,
   Package,
@@ -18,7 +19,8 @@ const AdminLayout = () => {
   ];
 
   return (
-    <div className="min-h-screen flex bg-vergreen-50">
+    <AdminProvider>
+      <div className="min-h-screen flex bg-vergreen-50">
       {/* Sidebar */}
       <aside className="hidden md:flex md:flex-col w-56 p-4 bg-white border-r border-vergreen-100">
         <div className="mb-8 px-2 text-xl font-bold text-vergreen-700">VerGreen</div>
@@ -56,7 +58,8 @@ const AdminLayout = () => {
         </div>
         <AdminNavbar />
       </div>
-    </div>
+      </div>
+    </AdminProvider>
   );
 };
 
