@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -34,8 +34,30 @@ const PlateBuilder = () => {
     { id: 'pasta', name: '🍝 Pasta Bar', description: 'Warm and satisfying pasta' }
   ];
 
+  // Auto-progress when bar type is selected
+  useEffect(() => {
+    if (currentStep === 1 && selections.barType) {
+      const timer = setTimeout(() => {
+        setCurrentStep(2);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [selections.barType, currentStep]);
+
+  // Auto-progress when base is selected
+  useEffect(() => {
+    if (currentStep === 2 && selections.base) {
+      const timer = setTimeout(() => {
+        setCurrentStep(3);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [selections.base, currentStep]);
+
   const getBasesForBarType = () => {
-    if (selections.barType === 'salad') {
+    if (selections.barType?.id === 'salad') {
       return [
         { id: 'rice', name: 'Rice', price: 3.00, icon: '🍚' },
         { id: 'lentils', name: 'Lentils', price: 3.50, icon: '🌾' },
@@ -43,7 +65,7 @@ const PlateBuilder = () => {
         { id: 'quinoa', name: 'Quinoa', price: 4.00, icon: '🌾' },
         { id: 'pasta-cold', name: 'Cold Pasta', price: 3.50, icon: '🍝' }
       ];
-    } else if (selections.barType === 'pasta') {
+    } else if (selections.barType?.id === 'pasta') {
       return [
         { id: 'penne', name: 'Penne', price: 3.50, icon: '🍝' },
         { id: 'fusilli', name: 'Fusilli', price: 3.50, icon: '🍝' },
@@ -55,7 +77,7 @@ const PlateBuilder = () => {
   };
 
   const getSaucesForBarType = () => {
-    if (selections.barType === 'salad') {
+    if (selections.barType?.id === 'salad') {
       return [
         { id: 'pesto', name: 'Pesto', price: 0.75, icon: '🌿' },
         { id: 'classic', name: 'Classic', price: 0.50, icon: '🥄' },
@@ -65,7 +87,7 @@ const PlateBuilder = () => {
         { id: 'moutarde', name: 'Moutarde', price: 0.50, icon: '🥄' },
         { id: 'basilic', name: 'Basilic', price: 0.75, icon: '🌿' }
       ];
-    } else if (selections.barType === 'pasta') {
+    } else if (selections.barType?.id === 'pasta') {
       return [
         { id: 'tomato', name: 'Tomato Sauce', price: 0.75, icon: '🍅' },
         { id: 'hot-tomato', name: 'Hot Tomato', price: 1.00, icon: '🌶️' },
@@ -126,26 +148,25 @@ const PlateBuilder = () => {
     return total.toFixed(2);
   };
 
-  const handleNext = () => {
+  const handleContinue = () => {
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       toast({
         title: "Order placed successfully! 🎉",
-        description: `Your ${selections.barType} plate is being prepared. Total: $${calculateTotal()}`,
+        description: `Your ${selections.barType?.name} plate is being prepared. Total: $${calculateTotal()}`,
       });
       navigate('/tracking');
     }
   };
 
-  const canProceed = () => {
-    switch (currentStep) {
-      case 1: return selections.barType !== null;
-      case 2: return selections.base !== null;
-      case 3: return true; // Can always proceed from ingredients
-      case 4: return true; // Can always place order
-      default: return false;
+  const handleBack = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      navigate('/dashboard');
     }
   };
 
@@ -153,27 +174,27 @@ const PlateBuilder = () => {
     switch (currentStep) {
       case 1:
         return (
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-vergreen-800 mb-4 text-center">
+          <div className="space-y-4 fade-in">
+            <h3 className="text-lg font-semibold text-vergreen-800 mb-6 text-center">
               Choose Your Bar Type
             </h3>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {barTypes.map(barType => (
                 <Card
                   key={barType.id}
-                  className={`p-6 border-2 cursor-pointer transition-all duration-300 rounded-2xl transform hover:scale-105 ${
+                  className={`p-6 border-2 cursor-pointer transition-all duration-500 rounded-2xl transform hover:scale-105 active:scale-95 ${
                     selections.barType?.id === barType.id
-                      ? 'border-vergreen-500 bg-vergreen-50 scale-105'
-                      : 'border-vergreen-200 bg-white hover:border-vergreen-300 hover:bg-vergreen-25'
+                      ? 'border-vergreen-500 bg-vergreen-50 scale-105 shadow-lg'
+                      : 'border-vergreen-200 bg-white hover:border-vergreen-300 hover:bg-vergreen-25 hover:shadow-md'
                   }`}
                   onClick={() => handleItemToggle('barType', barType)}
                 >
-                  <div className="text-center space-y-2">
+                  <div className="text-center space-y-3">
                     <h4 className="text-xl font-medium text-vergreen-800">{barType.name}</h4>
                     <p className="text-sm text-vergreen-600">{barType.description}</p>
                     {selections.barType?.id === barType.id && (
-                      <div className="w-6 h-6 bg-vergreen-500 rounded-full mx-auto flex items-center justify-center animate-scale-in">
-                        <Check className="w-4 h-4 text-white" />
+                      <div className="w-8 h-8 bg-vergreen-500 rounded-full mx-auto flex items-center justify-center animate-scale-in">
+                        <Check className="w-5 h-5 text-white" />
                       </div>
                     )}
                   </div>
@@ -185,25 +206,25 @@ const PlateBuilder = () => {
 
       case 2:
         return (
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-vergreen-800 mb-4 text-center">
+          <div className="space-y-4 fade-in">
+            <h3 className="text-lg font-semibold text-vergreen-800 mb-6 text-center">
               Choose Your Base
             </h3>
             <div className="grid grid-cols-2 gap-3">
               {getBasesForBarType().map(base => (
                 <Card
                   key={base.id}
-                  className={`p-4 border-2 cursor-pointer transition-all duration-300 rounded-2xl transform hover:scale-105 ${
+                  className={`p-4 border-2 cursor-pointer transition-all duration-500 rounded-2xl transform hover:scale-105 active:scale-95 ${
                     selections.base?.id === base.id
-                      ? 'border-vergreen-500 bg-vergreen-50 scale-105'
-                      : 'border-vergreen-200 bg-white hover:border-vergreen-300'
+                      ? 'border-vergreen-500 bg-vergreen-50 scale-105 shadow-lg'
+                      : 'border-vergreen-200 bg-white hover:border-vergreen-300 hover:shadow-md'
                   }`}
                   onClick={() => handleItemToggle('base', base)}
                 >
                   <div className="text-center space-y-2">
                     <div className="text-3xl">{base.icon}</div>
-                    <h4 className="font-medium text-vergreen-800">{base.name}</h4>
-                    <p className="text-sm font-semibold text-vergreen-600">
+                    <h4 className="font-medium text-vergreen-800 text-sm">{base.name}</h4>
+                    <p className="text-xs font-semibold text-vergreen-600">
                       ${base.price}
                     </p>
                     {selections.base?.id === base.id && (
@@ -220,24 +241,26 @@ const PlateBuilder = () => {
 
       case 3:
         return (
-          <div className="space-y-6">
+          <div className="space-y-6 fade-in">
             <h3 className="text-lg font-semibold text-vergreen-800 text-center mb-6">
               Add Your Ingredients
             </h3>
             
             {/* Proteins */}
             <div className="space-y-3">
-              <h4 className="text-md font-semibold text-vergreen-800">Proteins</h4>
+              <h4 className="text-md font-semibold text-vergreen-800 flex items-center">
+                <span className="text-lg mr-2">🍗</span> Proteins
+              </h4>
               <div className="grid grid-cols-1 gap-2">
                 {proteins.map(item => {
                   const isSelected = selections.proteins.find(i => i.id === item.id);
                   return (
                     <Card
                       key={item.id}
-                      className={`p-3 border cursor-pointer transition-all duration-300 rounded-2xl transform hover:scale-105 ${
+                      className={`p-3 border cursor-pointer transition-all duration-300 rounded-2xl transform hover:scale-105 active:scale-95 ${
                         isSelected
-                          ? 'border-vergreen-500 bg-vergreen-50 scale-105'
-                          : 'border-vergreen-200 bg-white hover:border-vergreen-300'
+                          ? 'border-vergreen-500 bg-vergreen-50 scale-105 shadow-md'
+                          : 'border-vergreen-200 bg-white hover:border-vergreen-300 hover:shadow-sm'
                       }`}
                       onClick={() => handleItemToggle('proteins', item)}
                     >
@@ -245,14 +268,14 @@ const PlateBuilder = () => {
                         <div className="flex items-center space-x-3">
                           <span className="text-2xl">{item.icon}</span>
                           <div>
-                            <h5 className="font-medium text-vergreen-800">{item.name}</h5>
-                            <p className="text-sm text-vergreen-600">${item.price}</p>
+                            <h5 className="font-medium text-vergreen-800 text-sm">{item.name}</h5>
+                            <p className="text-xs text-vergreen-600">${item.price}</p>
                           </div>
                         </div>
                         <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
                           isSelected
                             ? 'bg-vergreen-500 border-vergreen-500 scale-110'
-                            : 'border-vergreen-300'
+                            : 'border-vergreen-300 hover:border-vergreen-400'
                         }`}>
                           {isSelected && <Check className="w-4 h-4 text-white" />}
                         </div>
@@ -265,17 +288,19 @@ const PlateBuilder = () => {
 
             {/* Fibers & Vegetables */}
             <div className="space-y-3">
-              <h4 className="text-md font-semibold text-vergreen-800">Fibers & Vegetables</h4>
+              <h4 className="text-md font-semibold text-vergreen-800 flex items-center">
+                <span className="text-lg mr-2">🥬</span> Fibers & Vegetables
+              </h4>
               <div className="grid grid-cols-1 gap-2">
                 {fibers.map(item => {
                   const isSelected = selections.fibers.find(i => i.id === item.id);
                   return (
                     <Card
                       key={item.id}
-                      className={`p-3 border cursor-pointer transition-all duration-300 rounded-2xl transform hover:scale-105 ${
+                      className={`p-3 border cursor-pointer transition-all duration-300 rounded-2xl transform hover:scale-105 active:scale-95 ${
                         isSelected
-                          ? 'border-vergreen-500 bg-vergreen-50 scale-105'
-                          : 'border-vergreen-200 bg-white hover:border-vergreen-300'
+                          ? 'border-vergreen-500 bg-vergreen-50 scale-105 shadow-md'
+                          : 'border-vergreen-200 bg-white hover:border-vergreen-300 hover:shadow-sm'
                       }`}
                       onClick={() => handleItemToggle('fibers', item)}
                     >
@@ -283,14 +308,14 @@ const PlateBuilder = () => {
                         <div className="flex items-center space-x-3">
                           <span className="text-2xl">{item.icon}</span>
                           <div>
-                            <h5 className="font-medium text-vergreen-800">{item.name}</h5>
-                            <p className="text-sm text-vergreen-600">${item.price}</p>
+                            <h5 className="font-medium text-vergreen-800 text-sm">{item.name}</h5>
+                            <p className="text-xs text-vergreen-600">${item.price}</p>
                           </div>
                         </div>
                         <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
                           isSelected
                             ? 'bg-vergreen-500 border-vergreen-500 scale-110'
-                            : 'border-vergreen-300'
+                            : 'border-vergreen-300 hover:border-vergreen-400'
                         }`}>
                           {isSelected && <Check className="w-4 h-4 text-white" />}
                         </div>
@@ -303,17 +328,19 @@ const PlateBuilder = () => {
 
             {/* Cheese */}
             <div className="space-y-3">
-              <h4 className="text-md font-semibold text-vergreen-800">Cheese</h4>
+              <h4 className="text-md font-semibold text-vergreen-800 flex items-center">
+                <span className="text-lg mr-2">🧀</span> Cheese
+              </h4>
               <div className="grid grid-cols-1 gap-2">
                 {cheese.map(item => {
                   const isSelected = selections.cheese.find(i => i.id === item.id);
                   return (
                     <Card
                       key={item.id}
-                      className={`p-3 border cursor-pointer transition-all duration-300 rounded-2xl transform hover:scale-105 ${
+                      className={`p-3 border cursor-pointer transition-all duration-300 rounded-2xl transform hover:scale-105 active:scale-95 ${
                         isSelected
-                          ? 'border-vergreen-500 bg-vergreen-50 scale-105'
-                          : 'border-vergreen-200 bg-white hover:border-vergreen-300'
+                          ? 'border-vergreen-500 bg-vergreen-50 scale-105 shadow-md'
+                          : 'border-vergreen-200 bg-white hover:border-vergreen-300 hover:shadow-sm'
                       }`}
                       onClick={() => handleItemToggle('cheese', item)}
                     >
@@ -321,14 +348,14 @@ const PlateBuilder = () => {
                         <div className="flex items-center space-x-3">
                           <span className="text-2xl">{item.icon}</span>
                           <div>
-                            <h5 className="font-medium text-vergreen-800">{item.name}</h5>
-                            <p className="text-sm text-vergreen-600">${item.price}</p>
+                            <h5 className="font-medium text-vergreen-800 text-sm">{item.name}</h5>
+                            <p className="text-xs text-vergreen-600">${item.price}</p>
                           </div>
                         </div>
                         <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
                           isSelected
                             ? 'bg-vergreen-500 border-vergreen-500 scale-110'
-                            : 'border-vergreen-300'
+                            : 'border-vergreen-300 hover:border-vergreen-400'
                         }`}>
                           {isSelected && <Check className="w-4 h-4 text-white" />}
                         </div>
@@ -341,17 +368,19 @@ const PlateBuilder = () => {
 
             {/* Sauces */}
             <div className="space-y-3">
-              <h4 className="text-md font-semibold text-vergreen-800">Sauces</h4>
+              <h4 className="text-md font-semibold text-vergreen-800 flex items-center">
+                <span className="text-lg mr-2">🥄</span> Sauces
+              </h4>
               <div className="grid grid-cols-1 gap-2">
                 {getSaucesForBarType().map(item => {
                   const isSelected = selections.sauces.find(i => i.id === item.id);
                   return (
                     <Card
                       key={item.id}
-                      className={`p-3 border cursor-pointer transition-all duration-300 rounded-2xl transform hover:scale-105 ${
+                      className={`p-3 border cursor-pointer transition-all duration-300 rounded-2xl transform hover:scale-105 active:scale-95 ${
                         isSelected
-                          ? 'border-vergreen-500 bg-vergreen-50 scale-105'
-                          : 'border-vergreen-200 bg-white hover:border-vergreen-300'
+                          ? 'border-vergreen-500 bg-vergreen-50 scale-105 shadow-md'
+                          : 'border-vergreen-200 bg-white hover:border-vergreen-300 hover:shadow-sm'
                       }`}
                       onClick={() => handleItemToggle('sauces', item)}
                     >
@@ -359,14 +388,14 @@ const PlateBuilder = () => {
                         <div className="flex items-center space-x-3">
                           <span className="text-2xl">{item.icon}</span>
                           <div>
-                            <h5 className="font-medium text-vergreen-800">{item.name}</h5>
-                            <p className="text-sm text-vergreen-600">${item.price}</p>
+                            <h5 className="font-medium text-vergreen-800 text-sm">{item.name}</h5>
+                            <p className="text-xs text-vergreen-600">${item.price}</p>
                           </div>
                         </div>
                         <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
                           isSelected
                             ? 'bg-vergreen-500 border-vergreen-500 scale-110'
-                            : 'border-vergreen-300'
+                            : 'border-vergreen-300 hover:border-vergreen-400'
                         }`}>
                           {isSelected && <Check className="w-4 h-4 text-white" />}
                         </div>
@@ -376,12 +405,22 @@ const PlateBuilder = () => {
                 })}
               </div>
             </div>
+
+            {/* Continue Button for Step 3 */}
+            <div className="pt-4">
+              <Button
+                onClick={handleContinue}
+                className="w-full bg-vergreen-600 hover:bg-vergreen-700 text-white font-medium py-3 rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95"
+              >
+                Review Your Plate
+              </Button>
+            </div>
           </div>
         );
 
       case 4:
         return (
-          <div className="space-y-6">
+          <div className="space-y-6 fade-in">
             <h3 className="text-lg font-semibold text-vergreen-800 text-center">
               Review Your Order
             </h3>
@@ -390,7 +429,7 @@ const PlateBuilder = () => {
             <div className="bg-vergreen-50 rounded-2xl p-4 space-y-3">
               <div className="flex justify-between items-center border-b border-vergreen-200 pb-2">
                 <span className="font-medium text-vergreen-800">
-                  {selections.barType === 'salad' ? '🥗 Salad Bar' : '🍝 Pasta Bar'}
+                  {selections.barType?.name}
                 </span>
               </div>
               
@@ -443,8 +482,8 @@ const PlateBuilder = () => {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => currentStep > 1 ? setCurrentStep(currentStep - 1) : navigate('/dashboard')}
-            className="text-vergreen-600 hover:text-vergreen-700 hover:bg-vergreen-50 transition-all duration-300"
+            onClick={handleBack}
+            className="text-vergreen-600 hover:text-vergreen-700 hover:bg-vergreen-50 transition-all duration-300 hover:scale-105 active:scale-95"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
@@ -461,13 +500,13 @@ const PlateBuilder = () => {
             <div key={step.number} className="flex items-center">
               <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all duration-500 transform ${
                 currentStep >= step.number
-                  ? 'bg-vergreen-500 text-white scale-110'
+                  ? 'bg-vergreen-500 text-white scale-110 shadow-lg'
                   : 'bg-vergreen-200 text-vergreen-600'
               }`}>
                 {currentStep > step.number ? <Check className="w-5 h-5" /> : step.number}
               </div>
               {index < steps.length - 1 && (
-                <div className={`w-12 h-1 mx-2 transition-all duration-500 ${
+                <div className={`w-12 h-1 mx-2 transition-all duration-500 rounded-full ${
                   currentStep > step.number ? 'bg-vergreen-500' : 'bg-vergreen-200'
                 }`} />
               )}
@@ -486,26 +525,27 @@ const PlateBuilder = () => {
         </div>
 
         {/* Step Content */}
-        <div className="bg-white rounded-3xl neumorphic p-6 mb-6">
+        <div className="bg-white rounded-3xl neumorphic p-6 mb-6 min-h-[400px]">
           {renderStepContent()}
         </div>
 
         {/* Bottom Actions */}
         <div className="space-y-4">
-          {currentStep > 1 && (
+          {currentStep > 2 && (
             <div className="bg-white rounded-2xl neumorphic p-4 flex justify-between items-center">
               <span className="text-vergreen-700 font-medium">Current Total</span>
               <span className="text-xl font-bold text-vergreen-800">${calculateTotal()}</span>
             </div>
           )}
           
-          <Button
-            onClick={handleNext}
-            disabled={!canProceed()}
-            className="w-full bg-vergreen-600 hover:bg-vergreen-700 text-white font-medium py-3 rounded-2xl transition-all duration-300 transform hover:scale-105 disabled:transform-none disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {currentStep === 4 ? `Place Order - $${calculateTotal()}` : 'Continue'}
-          </Button>
+          {currentStep === 4 && (
+            <Button
+              onClick={handleContinue}
+              className="w-full bg-vergreen-600 hover:bg-vergreen-700 text-white font-medium py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg"
+            >
+              Place Order - ${calculateTotal()}
+            </Button>
+          )}
         </div>
       </div>
 
