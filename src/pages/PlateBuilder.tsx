@@ -45,6 +45,11 @@ const PlateBuilder = () => {
     }
   }, [selections.barType, currentStep]);
 
+  // Reset base and sauces when bar type changes
+  useEffect(() => {
+    setSelections(prev => ({ ...prev, base: null, sauces: [] }));
+  }, [selections.barType]);
+
   // Auto-progress when base is selected
   useEffect(() => {
     if (currentStep === 2 && selections.base) {
@@ -63,7 +68,7 @@ const PlateBuilder = () => {
         { id: 'lentils', name: 'Lentils', price: 3.50, icon: '🌾' },
         { id: 'lettuce', name: 'Lettuce', price: 2.50, icon: '🥬' },
         { id: 'quinoa', name: 'Quinoa', price: 4.00, icon: '🌾' },
-        { id: 'pasta-cold', name: 'Cold Pasta', price: 3.50, icon: '🍝' }
+        { id: 'pasta', name: 'Pasta', price: 3.50, icon: '🍝' }
       ];
     } else if (selections.barType?.id === 'pasta') {
       return [
@@ -91,8 +96,7 @@ const PlateBuilder = () => {
       return [
         { id: 'tomato', name: 'Tomato Sauce', price: 0.75, icon: '🍅' },
         { id: 'hot-tomato', name: 'Hot Tomato', price: 1.00, icon: '🌶️' },
-        { id: 'white-sauce', name: 'White Sauce', price: 1.00, icon: '🥛' },
-        { id: 'pesto-pasta', name: 'Pesto', price: 1.25, icon: '🌿' }
+        { id: 'white-sauce', name: 'White Sauce', price: 1.00, icon: '🥛' }
       ];
     }
     return [];
@@ -153,11 +157,19 @@ const PlateBuilder = () => {
       setCurrentStep(currentStep + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
+      const orderTime = new Date().toLocaleString();
       toast({
         title: "Order placed successfully! 🎉",
         description: `Your ${selections.barType?.name} plate is being prepared. Total: $${calculateTotal()}`,
       });
-      navigate('/tracking');
+      navigate('/receipt', {
+        state: {
+          selections,
+          total: calculateTotal(),
+          orderTime,
+          code: 'VG24'
+        }
+      });
     }
   };
 
