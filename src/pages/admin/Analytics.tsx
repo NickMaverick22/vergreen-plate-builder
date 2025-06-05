@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, TrendingUp, DollarSign, Users, Clock } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from "recharts";
-import AdminNavbar from "@/components/AdminNavbar";
 
 const Analytics = () => {
   const navigate = useNavigate();
@@ -254,8 +253,6 @@ const Analytics = () => {
         </div>
       </div>
 
-      {/* Bottom Navigation */}
-      <AdminNavbar />
     </div>
   );
 };

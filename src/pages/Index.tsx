@@ -47,8 +47,8 @@ const Index = () => {
           <p className="text-vergreen-700 text-lg font-medium">
             Welcome to your healthy food journey
           </p>
-          <InteractiveButton 
-            to="/auth"
+          <InteractiveButton
+            to="/login"
             size="large"
             className="w-full shadow-lg hover:shadow-xl"
           >

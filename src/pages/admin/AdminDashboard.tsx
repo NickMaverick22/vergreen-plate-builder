@@ -2,6 +2,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useAdminData } from "@/contexts/AdminDataContext";
 import { 
   Users, 
   Clock, 
@@ -13,40 +14,34 @@ import {
   LogOut,
   Leaf
 } from "lucide-react";
-import AdminNavbar from "@/components/AdminNavbar";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const { orders, inventory } = useAdminData();
+
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+  const hoursSinceMorning = (Date.now() - startOfDay.getTime()) / 3600000;
 
   const kpis = [
     {
-      title: "Orders Today",
-      value: "47",
-      change: "+12%",
+      title: "Total Orders Today",
+      value: orders.length.toString(),
       icon: Package,
-      color: "text-blue-600"
+      color: "text-blue-600",
+    },
+    {
+      title: "Average Prep Time",
+      value: "8m",
+      icon: TrendingUp,
+      color: "text-purple-600",
     },
     {
       title: "Orders/Hour",
-      value: "6.2",
-      change: "+8%",
+      value: hoursSinceMorning ? (orders.length / hoursSinceMorning).toFixed(1) : "0",
       icon: Clock,
-      color: "text-vergreen-600"
+      color: "text-vergreen-600",
     },
-    {
-      title: "Queue Size",
-      value: "8",
-      change: "-3",
-      icon: Users,
-      color: "text-orange-600"
-    },
-    {
-      title: "Avg Prep Time",
-      value: "14m",
-      change: "-2m",
-      icon: TrendingUp,
-      color: "text-purple-600"
-    }
   ];
 
   const quickActions = [
@@ -73,11 +68,12 @@ const AdminDashboard = () => {
     }
   ];
 
-  const recentOrders = [
-    { id: "VG-001", customer: "Alex Johnson", status: "Preparing", time: "2m ago" },
-    { id: "VG-002", customer: "Sarah Wilson", status: "Ready", time: "5m ago" },
-    { id: "VG-003", customer: "Mike Chen", status: "Validated", time: "7m ago" },
-  ];
+  const recentOrders = orders.slice(0, 5);
+  const lowStock = Object.entries(inventory)
+    .flatMap(([category, items]) =>
+      items.filter((i) => i.stock <= i.minStock).map((i) => ({ ...i, category }))
+    )
+    .slice(0, 2);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-vergreen-50 to-emerald-50 pb-20 md:pb-4">
@@ -119,7 +115,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* KPIs Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {kpis.map((kpi, index) => (
             <Card key={index} className="bg-white rounded-3xl neumorphic p-6 text-center">
               <div className={`w-12 h-12 ${kpi.color} bg-opacity-10 rounded-2xl mx-auto mb-3 flex items-center justify-center`}>
@@ -130,9 +126,6 @@ const AdminDashboard = () => {
               </div>
               <div className="text-sm text-vergreen-600 mb-1">
                 {kpi.title}
-              </div>
-              <div className="text-xs text-vergreen-500">
-                {kpi.change}
               </div>
             </Card>
           ))}
@@ -166,36 +159,46 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Recent Orders */}
+        {/* Today's Orders */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="bg-white rounded-3xl neumorphic p-6">
+          <Card className="bg-white rounded-3xl neumorphic p-6 overflow-x-auto">
             <h3 className="text-lg font-semibold text-vergreen-800 mb-4">
-              Recent Orders
+              Today's Orders
             </h3>
-            <div className="space-y-3">
-              {recentOrders.map((order, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-vergreen-50 rounded-2xl">
-                  <div>
-                    <div className="font-medium text-vergreen-800">{order.id}</div>
-                    <div className="text-sm text-vergreen-600">{order.customer}</div>
-                  </div>
-                  <div className="text-right">
-                    <div className={`text-sm font-medium px-2 py-1 rounded-lg ${
-                      order.status === 'Ready' 
-                        ? 'bg-green-100 text-green-800'
-                        : order.status === 'Preparing'
-                        ? 'bg-orange-100 text-orange-800'
-                        : 'bg-blue-100 text-blue-800'
-                    }`}>
-                      {order.status}
-                    </div>
-                    <div className="text-xs text-vergreen-500 mt-1">{order.time}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <Button 
-              variant="outline" 
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="border-b border-vergreen-100 text-vergreen-600">
+                  <th className="px-3 py-2 text-left font-medium">Order ID</th>
+                  <th className="px-3 py-2 text-left font-medium">Time</th>
+                  <th className="px-3 py-2 font-medium">Status</th>
+                  <th className="px-3 py-2 text-right font-medium">Total</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-vergreen-100">
+                {recentOrders.map((order) => (
+                  <tr key={order.id}>
+                    <td className="px-3 py-2 whitespace-nowrap">{order.id}</td>
+                    <td className="px-3 py-2 whitespace-nowrap">{order.time}</td>
+                    <td className="px-3 py-2">
+                      <span
+                        className={`px-2 py-1 rounded-lg text-xs font-medium ${
+                          order.status === 'Ready'
+                            ? 'bg-green-100 text-green-800'
+                            : order.status === 'Preparing'
+                            ? 'bg-orange-100 text-orange-800'
+                            : 'bg-blue-100 text-blue-800'
+                        }`}
+                      >
+                        {order.status}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2 text-right">${order.total.toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <Button
+              variant="outline"
               className="w-full mt-4 border-vergreen-200 text-vergreen-700 hover:bg-vergreen-50 rounded-2xl"
               onClick={() => navigate('/admin/orders')}
             >
@@ -209,24 +212,31 @@ const AdminDashboard = () => {
               Low Stock Alerts
             </h3>
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-red-50 rounded-2xl">
-                <div>
-                  <div className="font-medium text-red-800">🥑 Avocado</div>
-                  <div className="text-sm text-red-600">Only 3 portions left</div>
+              {lowStock.length === 0 && (
+                <p className="text-sm text-vergreen-600">All items well stocked</p>
+              )}
+              {lowStock.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between p-3 bg-red-50 rounded-2xl"
+                >
+                  <div>
+                    <div className="font-medium text-red-800">
+                      {item.icon} {item.name}
+                    </div>
+                    <div className="text-sm text-red-600">
+                      {item.stock} portions left
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    className="bg-red-600 hover:bg-red-700 text-white rounded-xl"
+                    onClick={() => navigate('/admin/inventory')}
+                  >
+                    Restock
+                  </Button>
                 </div>
-                <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white rounded-xl">
-                  Restock
-                </Button>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-2xl">
-                <div>
-                  <div className="font-medium text-yellow-800">🧀 Feta Cheese</div>
-                  <div className="text-sm text-yellow-600">5 portions remaining</div>
-                </div>
-                <Button size="sm" className="bg-yellow-600 hover:bg-yellow-700 text-white rounded-xl">
-                  Restock
-                </Button>
-              </div>
+              ))}
             </div>
             <Button 
               variant="outline" 
@@ -239,8 +249,6 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Bottom Navigation */}
-      <AdminNavbar />
     </div>
   );
 };

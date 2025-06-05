@@ -5,62 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Clock, Filter, Search, MoreVertical } from "lucide-react";
+import { ArrowLeft, Filter, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import AdminNavbar from "@/components/AdminNavbar";
+import { useAdminData } from "@/contexts/AdminDataContext";
 
 const OrderManagement = () => {
   const navigate = useNavigate();
-  const [filter, setFilter] = useState("all");
+  const { orders, updateOrderStatus } = useAdminData();
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [dateFilter, setDateFilter] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-
-  const orders = [
-    {
-      id: "VG-2024-001",
-      customer: "Alex Johnson",
-      items: ["Mediterranean Power Bowl", "Tahini Dressing"],
-      status: "Preparing",
-      time: "12:30 PM",
-      total: 14.50,
-      estimatedTime: "8 min"
-    },
-    {
-      id: "VG-2024-002",
-      customer: "Sarah Wilson",
-      items: ["Asian Fusion Bowl", "Teriyaki Sauce"],
-      status: "Ready",
-      time: "12:25 PM",
-      total: 13.25,
-      estimatedTime: "Ready"
-    },
-    {
-      id: "VG-2024-003",
-      customer: "Mike Chen",
-      items: ["Green Goddess Salad", "Balsamic Glaze"],
-      status: "Validated",
-      time: "12:35 PM",
-      total: 12.75,
-      estimatedTime: "12 min"
-    },
-    {
-      id: "VG-2024-004",
-      customer: "Emma Davis",
-      items: ["Protein Power Pasta", "Pesto Sauce"],
-      status: "Submitted",
-      time: "12:40 PM",
-      total: 15.00,
-      estimatedTime: "15 min"
-    },
-    {
-      id: "VG-2024-005",
-      customer: "Tom Brown",
-      items: ["Vegan Paradise Bowl", "Olive Oil Dressing"],
-      status: "Preparing",
-      time: "12:28 PM",
-      total: 11.50,
-      estimatedTime: "6 min"
-    }
-  ];
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -77,15 +31,22 @@ const OrderManagement = () => {
     }
   };
 
-  const updateOrderStatus = (orderId, newStatus) => {
-    console.log(`Updating order ${orderId} to ${newStatus}`);
-    // Here you would update the order in your state management
-  };
 
-  const filteredOrders = orders.filter(order => {
-    if (filter !== "all" && order.status.toLowerCase() !== filter) return false;
-    if (searchTerm && !order.customer.toLowerCase().includes(searchTerm.toLowerCase()) && 
-        !order.id.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+  const filteredOrders = orders.filter((order) => {
+    if (statusFilter !== "all" && order.status.toLowerCase() !== statusFilter) {
+      return false;
+    }
+    const dateStr = order.createdAt.toISOString().slice(0, 10);
+    if (dateFilter && dateStr !== dateFilter) {
+      return false;
+    }
+    if (
+      searchTerm &&
+      !order.customer.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      !order.id.toLowerCase().includes(searchTerm.toLowerCase())
+    ) {
+      return false;
+    }
     return true;
   });
 
@@ -106,7 +67,7 @@ const OrderManagement = () => {
             </Button>
             <h1 className="text-xl font-bold text-vergreen-800">Order Management</h1>
           </div>
-          <div className="flex items-center space-x-3">
+          <div className="flex flex-wrap items-center gap-3">
             <div className="relative">
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-vergreen-500" />
               <Input
@@ -116,10 +77,16 @@ const OrderManagement = () => {
                 className="pl-10 w-64 bg-white border-vergreen-200 rounded-xl focus:ring-vergreen-500"
               />
             </div>
-            <Select value={filter} onValueChange={setFilter}>
+            <Input
+              type="date"
+              value={dateFilter}
+              onChange={(e) => setDateFilter(e.target.value)}
+              className="bg-white border-vergreen-200 rounded-xl px-3 py-2"
+            />
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-40 bg-white border-vergreen-200 rounded-xl">
                 <Filter className="w-4 h-4 mr-2" />
-                <SelectValue placeholder="Filter" />
+                <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Orders</SelectItem>
@@ -153,57 +120,41 @@ const OrderManagement = () => {
           ))}
         </div>
 
-        {/* Orders List */}
-        <div className="space-y-4">
-          {filteredOrders.map((order) => (
-            <Card key={order.id} className="bg-white rounded-3xl neumorphic p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-4">
-                  <div>
-                    <h3 className="font-semibold text-vergreen-800">{order.id}</h3>
-                    <p className="text-sm text-vergreen-600">{order.customer}</p>
-                  </div>
-                  <Badge className={`${getStatusColor(order.status)} border-0`}>
-                    {order.status}
-                  </Badge>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <div className="text-right">
-                    <div className="font-medium text-vergreen-800">${order.total}</div>
-                    <div className="text-sm text-vergreen-600">{order.time}</div>
-                  </div>
-                  <Button variant="ghost" size="sm" className="text-vergreen-600">
-                    <MoreVertical className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                {/* Order Items */}
-                <div className="lg:col-span-2">
-                  <h4 className="font-medium text-vergreen-800 mb-2">Order Items</h4>
-                  <div className="space-y-1">
-                    {order.items.map((item, index) => (
-                      <p key={index} className="text-sm text-vergreen-600">
-                        • {item}
-                      </p>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Clock className="w-4 h-4 text-vergreen-500" />
-                    <span className="text-sm text-vergreen-700">ETA: {order.estimatedTime}</span>
-                  </div>
-                  
-                  {order.status !== 'Ready' && (
-                    <Select 
-                      value={order.status} 
+        {/* Orders Table */}
+        <Card className="bg-white rounded-3xl neumorphic p-6 overflow-x-auto">
+          <table className="min-w-full text-sm">
+            <thead>
+              <tr className="border-b border-vergreen-100 text-vergreen-600">
+                <th className="px-3 py-2 text-left font-medium">Order ID</th>
+                <th className="px-3 py-2 text-left font-medium">Customer</th>
+                <th className="px-3 py-2 text-left font-medium">Date</th>
+                <th className="px-3 py-2 text-left font-medium">Time</th>
+                <th className="px-3 py-2 font-medium">Status</th>
+                <th className="px-3 py-2 text-right font-medium">Total</th>
+                <th className="px-3 py-2 font-medium">Update</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-vergreen-100">
+              {filteredOrders.map((order) => (
+                <tr key={order.id}>
+                  <td className="px-3 py-2 whitespace-nowrap">{order.id}</td>
+                  <td className="px-3 py-2 whitespace-nowrap">{order.customer}</td>
+                  <td className="px-3 py-2 whitespace-nowrap">
+                    {order.createdAt.toISOString().slice(0, 10)}
+                  </td>
+                  <td className="px-3 py-2 whitespace-nowrap">
+                    {order.createdAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  </td>
+                  <td className="px-3 py-2">
+                    <Badge className={`${getStatusColor(order.status)} border-0`}>{order.status}</Badge>
+                  </td>
+                  <td className="px-3 py-2 text-right">${order.total.toFixed(2)}</td>
+                  <td className="px-3 py-2">
+                    <Select
+                      value={order.status}
                       onValueChange={(newStatus) => updateOrderStatus(order.id, newStatus)}
                     >
-                      <SelectTrigger className="w-full bg-vergreen-50 border-vergreen-200 rounded-xl">
+                      <SelectTrigger className="w-32 bg-vergreen-50 border-vergreen-200 rounded-xl">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -213,21 +164,12 @@ const OrderManagement = () => {
                         <SelectItem value="Ready">Ready</SelectItem>
                       </SelectContent>
                     </Select>
-                  )}
-
-                  {order.status === 'Ready' && (
-                    <Button 
-                      className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl"
-                      onClick={() => updateOrderStatus(order.id, 'Completed')}
-                    >
-                      Mark as Picked Up
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Card>
 
         {filteredOrders.length === 0 && (
           <div className="text-center py-12">
@@ -244,8 +186,6 @@ const OrderManagement = () => {
         )}
       </div>
 
-      {/* Bottom Navigation */}
-      <AdminNavbar />
     </div>
   );
 };
