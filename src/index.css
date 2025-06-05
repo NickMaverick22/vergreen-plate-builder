@@ -92,6 +92,14 @@
     box-shadow: 
       8px 8px 16px rgba(142, 199, 143, 0.15),
       -8px -8px 16px rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease;
+  }
+  
+  .neumorphic:hover {
+    box-shadow: 
+      12px 12px 24px rgba(142, 199, 143, 0.2),
+      -12px -12px 24px rgba(255, 255, 255, 0.9);
+    transform: translateY(-2px);
   }
   
   .neumorphic-inset {
@@ -105,5 +113,74 @@
     background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .interactive-card {
+    @apply neumorphic cursor-pointer transition-all duration-300 ease-out;
+  }
+
+  .interactive-card:hover {
+    @apply bg-vergreen-50;
+  }
+
+  .interactive-card:active {
+    @apply scale-95;
+  }
+
+  .btn-primary {
+    @apply bg-vergreen-600 text-white px-6 py-3 rounded-2xl font-medium;
+    @apply transition-all duration-300 ease-out transform;
+    @apply hover:bg-vergreen-700 hover:scale-105 hover:shadow-lg;
+    @apply active:scale-95 active:bg-vergreen-800;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-vergreen-600 px-6 py-3 rounded-2xl font-medium border border-vergreen-200;
+    @apply transition-all duration-300 ease-out transform;
+    @apply hover:bg-vergreen-600 hover:text-white hover:scale-105 hover:shadow-lg;
+    @apply active:scale-95;
+  }
+
+  .fade-in {
+    animation: fadeIn 0.6s ease-out;
+  }
+
+  .slide-up {
+    animation: slideUp 0.5s ease-out;
+  }
+
+  .bounce-subtle {
+    animation: bounceSubtle 2s ease-in-out infinite;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounceSubtle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
   }
 }

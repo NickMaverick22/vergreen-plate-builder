@@ -6,6 +6,11 @@ const AdminNavbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const handleNavigation = (path: string) => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    navigate(path);
+  };
+
   const navItems = [
     {
       icon: Home,
@@ -38,15 +43,15 @@ const AdminNavbar = () => {
             return (
               <button
                 key={item.path}
-                onClick={() => navigate(item.path)}
-                className={`flex flex-col items-center justify-center p-2 rounded-xl transition-colors ${
+                onClick={() => handleNavigation(item.path)}
+                className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-300 ease-out transform hover:scale-105 ${
                   isActive
                     ? "text-vergreen-600"
                     : "text-gray-400 hover:text-vergreen-500"
                 }`}
               >
                 <div
-                  className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                  className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
                     isActive
                       ? "bg-vergreen-100"
                       : "hover:bg-vergreen-50"

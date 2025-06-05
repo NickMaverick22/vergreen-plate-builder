@@ -1,14 +1,12 @@
 
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useState, useEffect } from "react";
 import { Leaf, Mail, Lock, User, ArrowLeft } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import InteractiveButton from "@/components/ui/interactive-button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const AuthPage = () => {
-  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -16,6 +14,11 @@ const AuthPage = () => {
     email: "",
     password: "",
   });
+
+  useEffect(() => {
+    // Scroll to top on page load
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +31,9 @@ const AuthPage = () => {
         title: isLogin ? "Welcome back!" : "Account created!",
         description: isLogin ? "You've been logged in successfully." : "Your account has been created successfully.",
       });
-      navigate('/dashboard');
+      // Navigate to dashboard after success
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.location.href = '/dashboard';
     }, 1500);
   };
 
@@ -40,19 +45,18 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-vergreen-50 to-emerald-50 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-vergreen-50 to-emerald-50 p-4 fade-in">
       <div className="max-w-md mx-auto pt-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <Button
+        <div className="flex items-center justify-between mb-8 slide-up">
+          <InteractiveButton
             variant="ghost"
-            size="sm"
-            onClick={() => navigate('/')}
-            className="text-vergreen-600 hover:text-vergreen-700"
+            to="/"
+            className="text-vergreen-600 hover:text-vergreen-700 px-3 py-2"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
-          </Button>
+          </InteractiveButton>
           <div className="flex items-center space-x-2">
             <Leaf className="w-6 h-6 text-vergreen-600" />
             <span className="font-bold text-vergreen-800">vergreen</span>
@@ -60,7 +64,7 @@ const AuthPage = () => {
         </div>
 
         {/* Auth Card */}
-        <div className="bg-white rounded-3xl neumorphic p-8 space-y-6">
+        <div className="bg-white rounded-3xl neumorphic p-8 space-y-6 slide-up" style={{ animationDelay: '0.1s' }}>
           {/* Title */}
           <div className="text-center space-y-2">
             <h1 className="text-2xl font-bold text-vergreen-800">
@@ -88,7 +92,7 @@ const AuthPage = () => {
                     placeholder="Enter your full name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="pl-10 bg-vergreen-50 border-vergreen-200 rounded-2xl focus:ring-vergreen-500 focus:border-vergreen-500"
+                    className="pl-10 bg-vergreen-50 border-vergreen-200 rounded-2xl focus:ring-vergreen-500 focus:border-vergreen-500 transition-all duration-300"
                   />
                 </div>
               </div>
@@ -108,7 +112,7 @@ const AuthPage = () => {
                   placeholder="Enter your email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="pl-10 bg-vergreen-50 border-vergreen-200 rounded-2xl focus:ring-vergreen-500 focus:border-vergreen-500"
+                  className="pl-10 bg-vergreen-50 border-vergreen-200 rounded-2xl focus:ring-vergreen-500 focus:border-vergreen-500 transition-all duration-300"
                 />
               </div>
             </div>
@@ -127,7 +131,7 @@ const AuthPage = () => {
                   placeholder="Enter your password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="pl-10 bg-vergreen-50 border-vergreen-200 rounded-2xl focus:ring-vergreen-500 focus:border-vergreen-500"
+                  className="pl-10 bg-vergreen-50 border-vergreen-200 rounded-2xl focus:ring-vergreen-500 focus:border-vergreen-500 transition-all duration-300"
                 />
               </div>
             </div>
@@ -136,17 +140,19 @@ const AuthPage = () => {
               <div className="text-right">
                 <button
                   type="button"
-                  className="text-sm text-vergreen-600 hover:text-vergreen-700 font-medium"
+                  className="text-sm text-vergreen-600 hover:text-vergreen-700 font-medium transition-colors duration-300"
                 >
                   Forgot password?
                 </button>
               </div>
             )}
 
-            <Button
-              type="submit"
+            <InteractiveButton
+              variant="primary"
+              size="large"
               disabled={isLoading}
-              className="w-full bg-vergreen-600 hover:bg-vergreen-700 text-white font-medium py-3 rounded-2xl transition-all duration-300 transform hover:scale-105 disabled:transform-none disabled:opacity-70"
+              className="w-full"
+              onClick={() => {}}
             >
               {isLoading ? (
                 <div className="flex items-center space-x-2">
@@ -156,7 +162,7 @@ const AuthPage = () => {
               ) : (
                 isLogin ? "Sign In" : "Create Account"
               )}
-            </Button>
+            </InteractiveButton>
           </form>
 
           {/* Toggle */}
@@ -165,7 +171,7 @@ const AuthPage = () => {
               {isLogin ? "Don't have an account?" : "Already have an account?"}
               <button
                 onClick={() => setIsLogin(!isLogin)}
-                className="ml-2 text-vergreen-700 font-medium hover:text-vergreen-800"
+                className="ml-2 text-vergreen-700 font-medium hover:text-vergreen-800 transition-colors duration-300"
               >
                 {isLogin ? "Create Account" : "Sign In"}
               </button>
