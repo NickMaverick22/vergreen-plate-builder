@@ -1,4 +1,5 @@
 
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -6,72 +7,65 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, RotateCcw, Download, Star } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import CustomerNavbar from "@/components/CustomerNavbar";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/contexts/AuthContext";
 
 const OrderHistory = () => {
   const navigate = useNavigate();
-
-  const orders = [
-    {
-      id: "VG-2024-001",
-      date: "Today, 12:30 PM",
-      items: ["Mediterranean Power Bowl", "Tahini Dressing", "Extra Avocado"],
-      total: 14.50,
-      status: "Preparing",
-      rating: null
-    },
-    {
-      id: "VG-2024-002",
-      date: "Yesterday, 1:15 PM",
-      items: ["Asian Fusion Bowl", "Teriyaki Sauce", "Grilled Tofu"],
-      total: 13.25,
-      status: "Completed",
-      rating: 5
-    },
-    {
-      id: "VG-2024-003",
-      date: "2 days ago, 12:45 PM",
-      items: ["Green Goddess Salad", "Balsamic Glaze", "Feta Cheese"],
-      total: 12.75,
-      status: "Completed",
-      rating: 4
-    },
-    {
-      id: "VG-2024-004",
-      date: "3 days ago, 1:00 PM",
-      items: ["Protein Power Pasta", "Pesto Sauce", "Grilled Chicken"],
-      total: 15.00,
-      status: "Completed",
-      rating: 5
-    },
-    {
-      id: "VG-2024-005",
-      date: "1 week ago, 12:20 PM",
-      items: ["Vegan Paradise Bowl", "Olive Oil Dressing", "Mixed Nuts"],
-      total: 11.50,
-      status: "Completed",
-      rating: 4
-    }
-  ];
-
-  const handleReorder = (order) => {
-    toast({
-      title: "Reordering...",
-      description: `Adding ${order.items[0]} to your cart`,
-    });
-    // Simulate navigation to plate builder with pre-filled items
-    setTimeout(() => {
-      navigate('/plate-builder');
-    }, 1000);
+  const { user } = useAuth();
+  type Order = {
+    id: string;
+    created_at: string;
+    ingredients: string[];
+    total: number;
+    status: string;
+    rating?: number;
   };
 
-  const handleRating = (orderId, rating) => {
+  const [orders, setOrders] = useState<Order[]>([]);
+
+  useEffect(() => {
+    if (!user) return;
+    const load = async () => {
+      const { data, error } = await supabase
+        .from("orders")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+      if (error) {
+        toast({ title: "Error", description: error.message });
+      } else if (data) {
+        setOrders(data);
+      }
+    };
+    void load();
+  }, [user]);
+
+  const handleReorder = async (order: Order) => {
+    if (!user) return;
+    const { error } = await supabase.from('orders').insert({
+      user_id: user.id,
+      customer: user.email,
+      ingredients: order.ingredients,
+      total: order.total,
+      status: 'Submitted'
+    });
+    if (error) {
+      toast({ title: 'Reorder failed', description: error.message });
+    } else {
+      toast({ title: 'Order submitted' });
+      navigate('/tracking');
+    }
+  };
+
+  const handleRating = (orderId: string, rating: number) => {
     toast({
       title: "Thanks for your feedback!",
       description: `You rated this order ${rating} stars`,
     });
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'Preparing':
         return 'bg-orange-100 text-orange-800';
@@ -84,7 +78,7 @@ const OrderHistory = () => {
     }
   };
 
-  const renderStars = (rating, orderId) => {
+  const renderStars = (rating: number | undefined, orderId: string) => {
     if (rating) {
       return (
         <div className="flex items-center space-x-1">
@@ -137,15 +131,22 @@ const OrderHistory = () => {
         <Card className="bg-white rounded-3xl neumorphic p-6">
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
-              <div className="text-2xl font-bold text-vergreen-800 mb-1">5</div>
+              <div className="text-2xl font-bold text-vergreen-800 mb-1">{orders.length}</div>
               <div className="text-sm text-vergreen-600">Total Orders</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-vergreen-800 mb-1">$67</div>
+              <div className="text-2xl font-bold text-vergreen-800 mb-1">
+                ${orders.reduce((t, o) => t + (o.total || 0), 0).toFixed(2)}
+              </div>
               <div className="text-sm text-vergreen-600">Total Spent</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-vergreen-800 mb-1">4.6</div>
+              <div className="text-2xl font-bold text-vergreen-800 mb-1">
+                {(
+                  orders.reduce((c, o) => c + (o.rating || 0), 0) /
+                  (orders.filter(o => o.rating).length || 1)
+                ).toFixed(1)}
+              </div>
               <div className="text-sm text-vergreen-600">Avg Rating</div>
             </div>
           </div>
@@ -161,7 +162,9 @@ const OrderHistory = () => {
                   <h3 className="font-semibold text-vergreen-800">
                     Order {order.id}
                   </h3>
-                  <p className="text-sm text-vergreen-600">{order.date}</p>
+                  <p className="text-sm text-vergreen-600">
+                    {new Date(order.created_at).toLocaleString()}
+                  </p>
                 </div>
                 <Badge className={`${getStatusColor(order.status)} border-0`}>
                   {order.status}
@@ -170,7 +173,7 @@ const OrderHistory = () => {
 
               {/* Order Items */}
               <div className="space-y-1">
-                {order.items.map((item, index) => (
+                {order.ingredients.map((item: string, index: number) => (
                   <p key={index} className="text-sm text-vergreen-700">
                     {index === 0 ? "🍽️ " : "➕ "}{item}
                   </p>
