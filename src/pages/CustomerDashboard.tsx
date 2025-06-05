@@ -1,39 +1,30 @@
-
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Leaf, ChefHat, Clock, History, User, Bell, Plus } from "lucide-react";
 import CustomerNavbar from "@/components/CustomerNavbar";
-
 const CustomerDashboard = () => {
   const navigate = useNavigate();
-
-  const quickActions = [
-    {
-      title: "Compose My Plate",
-      description: "Build your perfect healthy meal",
-      icon: Plus,
-      path: "/plate-builder",
-      color: "bg-gradient-to-r from-vergreen-500 to-vergreen-600"
-    },
-    {
-      title: "My Orders",
-      description: "Track your current orders",
-      icon: Clock,
-      path: "/tracking",
-      color: "bg-gradient-to-r from-blue-500 to-blue-600"
-    },
-    {
-      title: "Order History",
-      description: "View past orders & reorder",
-      icon: History,
-      path: "/history",
-      color: "bg-gradient-to-r from-purple-500 to-purple-600"
-    }
-  ];
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-vergreen-50 to-emerald-50 pb-20">
+  const quickActions = [{
+    title: "Compose My Plate",
+    description: "Build your perfect healthy meal",
+    icon: Plus,
+    path: "/plate-builder",
+    color: "bg-gradient-to-r from-vergreen-500 to-vergreen-600"
+  }, {
+    title: "My Orders",
+    description: "Track your current orders",
+    icon: Clock,
+    path: "/tracking",
+    color: "bg-gradient-to-r from-blue-500 to-blue-600"
+  }, {
+    title: "Order History",
+    description: "View past orders & reorder",
+    icon: History,
+    path: "/history",
+    color: "bg-gradient-to-r from-purple-500 to-purple-600"
+  }];
+  return <div className="min-h-screen bg-gradient-to-br from-vergreen-50 to-emerald-50 pb-20 bg-green-400 rounded-full">
       {/* Header */}
       <div className="bg-white/80 backdrop-blur-sm border-b border-vergreen-100 sticky top-0 z-10">
         <div className="max-w-md mx-auto px-4 py-4 flex items-center justify-between">
@@ -89,12 +80,7 @@ const CustomerDashboard = () => {
             Quick Actions
           </h3>
           <div className="space-y-3">
-            {quickActions.map((action, index) => (
-              <Card
-                key={index}
-                className="p-0 border-0 shadow-none bg-white rounded-3xl neumorphic overflow-hidden cursor-pointer transition-all duration-300 hover:scale-105"
-                onClick={() => navigate(action.path)}
-              >
+            {quickActions.map((action, index) => <Card key={index} className="p-0 border-0 shadow-none bg-white rounded-3xl neumorphic overflow-hidden cursor-pointer transition-all duration-300 hover:scale-105" onClick={() => navigate(action.path)}>
                 <div className="flex items-center p-5">
                   <div className={`w-14 h-14 ${action.color} rounded-2xl flex items-center justify-center mr-4`}>
                     <action.icon className="w-7 h-7 text-white" />
@@ -111,8 +97,7 @@ const CustomerDashboard = () => {
                     <span className="text-vergreen-600">→</span>
                   </div>
                 </div>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </div>
 
@@ -135,11 +120,7 @@ const CustomerDashboard = () => {
             </p>
             <div className="flex items-center justify-between pt-2">
               <span className="text-lg font-bold text-vergreen-800">$12.99</span>
-              <Button 
-                size="sm" 
-                className="bg-vergreen-600 hover:bg-vergreen-700 text-white rounded-xl"
-                onClick={() => navigate('/plate-builder')}
-              >
+              <Button size="sm" className="bg-vergreen-600 hover:bg-vergreen-700 text-white rounded-xl" onClick={() => navigate('/plate-builder')}>
                 Try It
               </Button>
             </div>
@@ -149,8 +130,6 @@ const CustomerDashboard = () => {
 
       {/* Bottom Navigation */}
       <CustomerNavbar />
-    </div>
-  );
+    </div>;
 };
-
 export default CustomerDashboard;
